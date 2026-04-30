@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cetes Kids: Aventura en la Nube</title>
     
-    <!-- 🚀 Icono para el iPad/iPhone mejorado -->
+    <!-- 🚀 Icono para el iPad/iPhone -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234f46e5'/%3E%3Ctext y='78' x='10' font-family='Arial' font-size='70'%3E🚀%3C/text%3E%3C/svg%3E">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -19,81 +19,19 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
-        
-        body { 
-            font-family: 'Fredoka', sans-serif; 
-            background: #f0f7ff; 
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            color: #1e293b;
-        }
-
-        .card-3d {
-            background: white;
-            border-radius: 2.5rem;
-            border: 4px solid #f1f5f9;
-            box-shadow: 0 10px 0 0 #e2e8f0;
-            transition: all 0.2s ease;
-        }
-        .card-3d:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 14px 0 0 #e2e8f0;
-        }
-
-        .btn-3d {
-            border-radius: 1.5rem;
-            font-weight: 900;
-            transition: all 0.1s ease;
-            position: relative;
-            top: 0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-3d:active {
-            top: 6px;
-            box-shadow: 0 2px 0 0 currentColor !important;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-12px) rotate(2deg); }
-        }
+        body { font-family: 'Fredoka', sans-serif; background: #f0f7ff; margin: 0; padding: 0; overflow-x: hidden; color: #1e293b; }
+        .card-3d { background: white; border-radius: 2.5rem; border: 4px solid #f1f5f9; box-shadow: 0 10px 0 0 #e2e8f0; transition: all 0.2s ease; }
+        .card-3d:hover { transform: translateY(-4px); box-shadow: 0 14px 0 0 #e2e8f0; }
+        .btn-3d { border-radius: 1.5rem; font-weight: 900; transition: all 0.1s ease; position: relative; top: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-3d:active { top: 6px; box-shadow: 0 2px 0 0 currentColor !important; }
+        @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-12px) rotate(2deg); } }
         .animate-float { animation: float 4s ease-in-out infinite; }
-
         .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 20px; }
-        
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .emoji-option {
-            font-size: 2.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            padding: 15px;
-            border-radius: 1.5rem;
-            border: 4px solid transparent;
-        }
-        .emoji-option:hover { transform: scale(1.2); background: #f1f5f9; }
-        .emoji-selected { background: #f0f9ff; border-color: #3b82f6; transform: scale(1.1); }
-        
-        .medal-slot {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .medal-unlocked::after {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
+        .medal-slot { position: relative; overflow: hidden; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .medal-unlocked::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent); transform: rotate(45deg); animation: shine 3s infinite; }
         @keyframes shine { 0% { left: -100%; } 100% { left: 100%; } }
         .medal-locked { filter: grayscale(0.8) opacity(0.7); }
     </style>
@@ -101,7 +39,6 @@
 <body>
     <div id="root"></div>
 
-    <!-- 🔑 CONFIGURACIÓN DE FIREBASE INTEGRADA 🔑 -->
     <script>
         window.USER_FIREBASE_CONFIG = {
             apiKey: "AIzaSyCgh9G37P75Z1L53JZzI2jjL4GBgcV74Pk",
@@ -140,7 +77,7 @@
                 amber: { bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-50', border: 'border-amber-200', shadow: 'shadow-[0_8px_0_0_#d97706]', gradient: 'from-amber-400 to-orange-600', chart: '#fbbf24' }
             };
 
-            const availableEmojis = ['👧', '👦', '😎', '🤩', '🤠', '👻', '🤖', '🎨', '🍦', '🎮', '🦄', '🐱', '🐶', '🐰', '🦊', '⭐', '✨', '🪄', '🚀', '🌈', '💎', '👑', '💃', '⚽', '🛹', '🎸', '🧩', '🧸'];
+            const achievementColors = ['from-yellow-400 to-orange-600', 'from-emerald-400 to-teal-600', 'from-purple-400 to-fuchsia-600', 'from-sky-400 to-indigo-600'];
 
             const PieChartSources = ({ data }) => {
                 if (!data || data.length === 0) return <div className="text-center py-8 text-slate-400 font-bold italic">¡Aún no hay ahorros!</div>;
@@ -156,12 +93,12 @@
                                     const strokeDasharray = `${percent} ${100 - percent}`;
                                     const strokeDashoffset = -cumulativePercent;
                                     cumulativePercent += percent;
-                                    return <circle key={i} cx="16" cy="16" r="16" fill="transparent" stroke={colors[i % colors.length]} strokeWidth="32" strokeDasharray={strokeDasharray} strokeDashoffset={strokeDashoffset} className="transition-all duration-700" />;
+                                    return <circle key={i} cx="16" cy="16" r="16" fill="transparent" stroke={colors[i % colors.length]} strokeWidth="32" strokeDasharray={strokeDasharray} strokeDashoffset={strokeDashoffset} />;
                                 })}
                                 <circle cx="16" cy="16" r="10" fill="white" />
                             </svg>
-                            <div className="absolute inset-0 flex items-center justify-center flex-col text-center">
-                                <span className="text-[10px] font-black text-slate-400 uppercase leading-none tracking-tighter">Total</span>
+                            <div className="absolute inset-0 flex items-center justify-center flex-col text-center uppercase">
+                                <span className="text-[10px] font-black text-slate-400 leading-none">Total</span>
                                 <span className="text-xl font-black text-slate-800">${(total || 0).toLocaleString()}</span>
                             </div>
                         </div>
@@ -181,7 +118,7 @@
             };
 
             const GrowthLineChart = ({ data, color }) => {
-                if (!data || data.length < 2) return <div className="h-full flex flex-col items-center justify-center text-slate-400 font-bold italic p-8 text-center bg-white rounded-[2rem] border-4 border-dashed border-slate-100"><SafeIcon name="Mountain" size={64} className="mb-4 opacity-20" /><p>Sincroniza el saldo real para ver tu montaña</p></div>;
+                if (!data || data.length < 2) return <div className="h-full flex flex-col items-center justify-center text-slate-400 font-bold italic p-8 text-center bg-white rounded-[2rem] border-4 border-dashed border-slate-100"><SafeIcon name="Mountain" size={64} className="mb-4 opacity-20" /><p>Sincroniza saldo en Panel Papá</p></div>;
                 const width = 800, height = 300, padding = 60;
                 const maxVal = Math.max(...data.map(d => d.balance || 0)) * 1.2;
                 const points = data.map((d, i) => ({
@@ -194,7 +131,7 @@
                         <path d={pathData} fill="none" stroke={color} strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
                         {points.map((p, i) => (
                             <g key={i}>
-                                <circle cx={p.x} cy={p.y} r="12" fill="white" stroke={color} strokeWidth="6" />
+                                <circle cx={p.x} cy={p.y} r={12} fill="white" stroke={color} strokeWidth="6" />
                                 <text x={p.x} y={p.y - 35} textAnchor="middle" fontSize="14" fontWeight="900" fill={color}>${(data[i].balance || 0).toLocaleString()}</text>
                             </g>
                         ))}
@@ -224,10 +161,11 @@
                 const [newGoalTarget, setNewGoalTarget] = useState('');
                 const [editingGoalId, setEditingGoalId] = useState(null);
 
-                // Estados de Logros
+                // Logros
                 const [newAchName, setNewAchName] = useState('');
                 const [newAchTarget, setNewAchTarget] = useState('');
                 const [newAchType, setNewAchType] = useState('ahorro');
+                const [newAchIcon, setNewAchIcon] = useState('Trophy');
 
                 const appId = window.USER_APP_ID;
 
@@ -242,7 +180,7 @@
                             setDb(firestore);
                             await signInAnonymously(auth);
                             onAuthStateChanged(auth, setUser);
-                        } catch (e) { console.error("Firebase error:", e); setLoading(false); }
+                        } catch (e) { console.error(e); setLoading(false); }
                     };
                     init();
                 }, []);
@@ -250,16 +188,14 @@
                 useEffect(() => {
                     if (!user || !db) return;
                     const { collection, query, onSnapshot, doc, setDoc } = window.FirebaseSDK;
-                    const profilesCol = collection(db, 'artifacts', appId, 'public', 'data', 'profiles');
-                    
-                    const unsubscribe = onSnapshot(query(profilesCol), (snapshot) => {
+                    const unsubscribe = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'profiles')), (snapshot) => {
                         const loaded = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
                         if (loaded.length === 0) {
-                            // Cargar perfiles por defecto si la base de datos está vacía
-                            const majo = { id: 'majo', name: 'Majo', theme: 'rose', emoji: '🎨', realBalance: 0, totalContributed: 0, history: [], snapshots: [], goals: [], achievements: [{id:'1', label:'Primer Ahorro', target:500, type:'ahorro', icon:'PiggyBank', color:'from-yellow-400 to-orange-600'}], config: { iceCreamPrice: 45, moviePrice: 120 } };
-                            const ivanna = { id: 'ivanna', name: 'Ivanna', theme: 'indigo', emoji: '🦄', realBalance: 0, totalContributed: 0, history: [], snapshots: [], goals: [], achievements: [{id:'1', label:'Primer Ahorro', target:500, type:'ahorro', icon:'PiggyBank', color:'from-yellow-400 to-orange-600'}], config: { iceCreamPrice: 45, moviePrice: 120 } };
-                            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', 'majo'), majo);
-                            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', 'ivanna'), ivanna);
+                            const initial = [
+                                { id: 'majo', name: 'Majo', theme: 'rose', emoji: '🎨', realBalance: 0, totalContributed: 0, history: [], snapshots: [], goals: [], achievements: [{id:'1', label:'Primer Ahorro', target:500, type:'ahorro', icon:'PiggyBank', color:'from-yellow-400 to-orange-600'}], config: { iceCreamPrice: 45, moviePrice: 120 } },
+                                { id: 'ivanna', name: 'Ivanna', theme: 'indigo', emoji: '🦄', realBalance: 0, totalContributed: 0, history: [], snapshots: [], goals: [], achievements: [{id:'1', label:'Primer Ahorro', target:500, type:'ahorro', icon:'PiggyBank', color:'from-yellow-400 to-orange-600'}], config: { iceCreamPrice: 45, moviePrice: 120 } }
+                            ];
+                            initial.forEach(p => setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', p.id), p));
                         } else {
                             setProfiles(loaded);
                             setActiveProfileId(prev => prev || loaded[0].id);
@@ -271,6 +207,12 @@
 
                 const activeProfile = profiles.find(p => p.id === activeProfileId) || profiles[0] || {};
                 const theme = colorThemes[activeProfile.theme] || colorThemes.rose;
+
+                const currentBalance = activeProfile.realBalance || 0;
+                const contributed = activeProfile.totalContributed || 0;
+                const gain = Math.max(0, currentBalance - contributed);
+                const iceCream = Math.floor(gain / (activeProfile.config?.iceCreamPrice || 45));
+                const cinema = Math.floor(gain / (activeProfile.config?.moviePrice || 120));
 
                 const sourceData = useMemo(() => {
                     if (!activeProfile.history) return [];
@@ -303,8 +245,8 @@
                     const allEvents = [...history.map(h => ({...h, type:'c', time: h.time || 0})), ...snapshots.map(s => ({...s, type:'s', time: s.time || 0}))].sort((a,b) => a.time - b.time);
                     let balance = 0, contributed = 0;
                     allEvents.forEach(ev => {
-                        if(ev.type==='c') { contributed += (ev.amount || 0); balance += (ev.amount || 0); }
-                        else balance = (ev.balance || 0);
+                        if(ev.type==='c') { contributed += ev.amount; balance += ev.amount; }
+                        else balance = ev.balance;
                     });
                     return {...p, realBalance: balance, totalContributed: contributed};
                 };
@@ -312,8 +254,7 @@
                 const handleAddSaving = async () => {
                     const amount = parseFloat(newAmount);
                     if (isNaN(amount)) return;
-                    const now = Date.now();
-                    const newHistory = [...(activeProfile.history || []), { id: now.toString(), time: now, date: new Date().toLocaleDateString(), amount, note: newNote || 'Ahorro' }];
+                    const newHistory = [...(activeProfile.history || []), { id: Date.now().toString(), time: Date.now(), date: new Date().toLocaleDateString(), amount, note: newNote || 'Ahorro' }];
                     await saveToCloud(recalculate({...activeProfile, history: newHistory}));
                     setNewAmount(''); setNewNote(''); setShowAddModal(false);
                 };
@@ -321,10 +262,37 @@
                 const handleAdminSync = async () => {
                     const val = parseFloat(adminRealBalance);
                     if (isNaN(val)) return;
-                    const now = Date.now();
-                    const newSnapshots = [...(activeProfile.snapshots || []), { id: now.toString(), time: now, date: new Date().toLocaleDateString(), balance: val }];
+                    const newSnapshots = [...(activeProfile.snapshots || []), { id: Date.now().toString(), time: Date.now(), date: new Date().toLocaleDateString(), balance: val }];
                     await saveToCloud(recalculate({...activeProfile, snapshots: newSnapshots}));
                     setAdminRealBalance(''); setShowAdminModal(false);
+                };
+
+                const updateConfig = async (key, val) => {
+                    const value = parseFloat(val);
+                    if (isNaN(value)) return;
+                    const { doc, updateDoc } = window.FirebaseSDK;
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', activeProfile.id), { [`config.${key}`]: value });
+                };
+
+                const handleAddAchievement = async () => {
+                    if (!newAchName || !newAchTarget) return;
+                    const currentAchs = activeProfile.achievements || [];
+                    const newAch = { id: Date.now().toString(), label: newAchName, target: parseFloat(newAchTarget), type: newAchType, icon: newAchIcon, color: achievementColors[currentAchs.length % achievementColors.length] };
+                    await saveToCloud({...activeProfile, achievements: [...currentAchs, newAch]});
+                    setNewAchName(''); setNewAchTarget('');
+                };
+
+                const deleteAchievement = async (id) => {
+                    const newAchs = (activeProfile.achievements || []).filter(a => a.id !== id);
+                    await saveToCloud({...activeProfile, achievements: newAchs});
+                };
+
+                const deleteRecord = async (id, type) => {
+                    let newHistory = activeProfile.history || [];
+                    let newSnapshots = activeProfile.snapshots || [];
+                    if(type==='Ahorro') newHistory = newHistory.filter(h => h.id !== id);
+                    else newSnapshots = newSnapshots.filter(s => s.id !== id);
+                    await saveToCloud(recalculate({...activeProfile, history: newHistory, snapshots: newSnapshots}));
                 };
 
                 const handleSaveGoal = async () => {
@@ -336,38 +304,16 @@
                     setNewGoalName(''); setNewGoalTarget(''); setEditingGoalId(null); setShowGoalModal(false);
                 };
 
-                const updateConfig = async (key, val) => {
-                    const value = parseFloat(val);
-                    if (isNaN(value)) return;
-                    const newConfig = { ...activeProfile.config, [key]: value };
-                    const { doc, updateDoc } = window.FirebaseSDK;
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', activeProfile.id), { config: newConfig });
-                };
-
-                const deleteRecord = async (id, type) => {
-                    let newHistory = activeProfile.history || [];
-                    let newSnapshots = activeProfile.snapshots || [];
-                    if(type==='Ahorro') newHistory = newHistory.filter(h => h.id !== id);
-                    else newSnapshots = newSnapshots.filter(s => s.id !== id);
-                    await saveToCloud(recalculate({...activeProfile, history: newHistory, snapshots: newSnapshots}));
-                };
-
                 if (loading) return <div className="h-screen flex items-center justify-center font-black text-2xl text-indigo-600 animate-pulse uppercase">CARGANDO NUBE FAMILIAR...</div>;
-
-                const currentBalance = activeProfile.realBalance || 0;
-                const contributed = activeProfile.totalContributed || 0;
-                const gain = Math.max(0, currentBalance - contributed);
-                const iceCreamPrice = activeProfile.config?.iceCreamPrice || 45;
-                const iceCream = Math.floor(gain / iceCreamPrice);
 
                 return (
                     <div className={`min-h-screen ${theme.light} p-4 md:p-8 fade-in transition-all duration-500`}>
                         <div className="max-w-7xl mx-auto">
-                            {/* Barra Superior Perfiles */}
-                            <div className="flex flex-wrap items-center justify-between gap-4 mb-8 bg-white/70 backdrop-blur-md p-4 rounded-[2.5rem] border-4 border-white shadow-xl">
+                            {/* Barra Perfiles */}
+                            <div className="flex flex-wrap items-center justify-between gap-4 mb-8 bg-white/70 backdrop-blur-md p-4 rounded-[2.5rem] border-4 border-white shadow-xl w-fit">
                                 <div className="flex items-center gap-3">
                                     {profiles.map(p => (
-                                        <button key={p.id} onClick={() => setActiveProfileId(p.id)} className={`px-8 py-3 rounded-[1.5rem] font-black text-lg transition-all btn-3d ${activeProfileId === p.id ? `${colorThemes[p.theme].bg} text-white ${colorThemes[p.theme].shadow}` : 'bg-white text-slate-400 shadow-[0_6px_0_0_#e2e8f0]'}`}>
+                                        <button key={p.id} onClick={() => setActiveProfileId(p.id)} className={`px-8 py-3 rounded-[1.5rem] font-black text-lg transition-all btn-3d ${activeProfileId === p.id ? `${colorThemes[p.theme].bg} text-white ${colorThemes[p.theme].shadow}` : 'bg-white text-slate-400'}`}>
                                             <span className="mr-2">{p.emoji || '⭐'}</span>{p.name}
                                         </button>
                                     ))}
@@ -382,8 +328,8 @@
                                 <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
                                     <div className="bg-white/30 p-8 rounded-[3rem] text-7xl animate-float shadow-2xl">{activeProfile.emoji || '🚀'}</div>
                                     <div>
-                                        <h1 className="text-6xl font-black mb-2 tracking-tighter leading-none italic">¡Hola, {activeProfile.name}!</h1>
-                                        <p className="text-white/80 text-xl font-bold italic tracking-wide">🚀 ¡Tu tesoro está creciendo!</p>
+                                        <h1 className="text-6xl font-black mb-2 tracking-tighter leading-none italic italic">¡Hola, {activeProfile.name}!</h1>
+                                        <p className="text-white/80 text-xl font-bold italic tracking-wide uppercase tracking-widest leading-none">¡Tu tesoro está creciendo!</p>
                                     </div>
                                 </div>
                                 <button onClick={() => setShowAddModal(true)} className="relative z-10 bg-white text-slate-900 px-14 py-8 rounded-[3rem] font-black text-3xl shadow-[0_15px_0_0_#f1f5f9] active:translate-y-3 transition-all flex items-center gap-4 uppercase tracking-tighter"><SafeIcon name="PlusCircle" className={theme.text} size={40} /> ¡Sumar!</button>
@@ -392,29 +338,64 @@
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                 <div className="card-3d p-12 text-center">
                                     <span className="text-slate-400 font-black uppercase text-xs tracking-widest block mb-4 italic">Tesoro Total</span>
-                                    <div className="text-8xl font-black text-slate-800 tracking-tighter leading-none mb-4">${(currentBalance || 0).toLocaleString()}</div>
-                                    <p className="text-xl font-bold text-slate-400 italic">Tuyo: ${(contributed || 0).toLocaleString()}</p>
+                                    <div className="text-8xl font-black text-slate-800 tracking-tighter leading-none mb-4">${currentBalance.toLocaleString()}</div>
+                                    <p className="text-xl font-bold text-slate-400 italic">Tuyo: ${contributed.toLocaleString()}</p>
                                 </div>
                                 <div className="card-3d p-12 text-center bg-gradient-to-br from-green-400 to-emerald-600 border-none text-white shadow-[0_10px_0_0_#065f46]">
                                     <span className="opacity-70 font-black uppercase text-xs tracking-widest block mb-4 italic">Ganancia Mágica</span>
-                                    <div className="text-8xl font-black tracking-tighter leading-none mb-4">+${(gain || 0).toLocaleString()}</div>
-                                    <div className="bg-white/20 px-6 py-2 rounded-full w-fit mx-auto font-black text-xl italic tracking-tighter">¡Equivale a {iceCream} helados! 🍦</div>
+                                    <div className="text-8xl font-black tracking-tighter leading-none mb-4">+${gain.toLocaleString()}</div>
+                                    <div className="bg-white/20 px-6 py-2 rounded-full w-fit mx-auto font-black text-xl italic tracking-tighter leading-none">¡Tu dinero está trabajando! ✨</div>
+                                </div>
+                            </div>
+
+                            {/* Premios Ganados */}
+                            <div className="card-3d p-12 mt-10 border-none bg-gradient-to-r from-indigo-50 to-purple-50">
+                                <h2 className="font-black mb-10 text-4xl text-slate-800 flex items-center gap-4 italic uppercase tracking-tighter"><SafeIcon name="PartyPopper" className="text-indigo-500" size={40} /> ¡Premios por Ganancia!</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className={`p-8 rounded-[3rem] flex items-center gap-8 border-4 transition-all ${iceCream > 0 ? 'bg-white border-rose-200 shadow-xl' : 'bg-white/50 opacity-50 grayscale'}`}>
+                                        <div className="bg-rose-500 p-8 rounded-[2rem] text-white shadow-md flex items-center justify-center"><SafeIcon name="IceCream" size={64} /></div>
+                                        <div><div className={`text-7xl font-black leading-none ${iceCream > 0 ? 'text-rose-600' : 'text-slate-400'}`}>{iceCream}</div><div className="text-xl font-black uppercase text-slate-500 tracking-widest leading-none mt-3">Helados</div></div>
+                                    </div>
+                                    <div className={`p-8 rounded-[3rem] flex items-center gap-8 border-4 transition-all ${cinema > 0 ? 'bg-white border-sky-200 shadow-xl' : 'bg-white/50 opacity-50 grayscale'}`}>
+                                        <div className="bg-sky-500 p-8 rounded-[2rem] text-white shadow-md flex items-center justify-center"><SafeIcon name="Ticket" size={64} /></div>
+                                        <div><div className={`text-7xl font-black leading-none ${cinema > 0 ? 'text-sky-600' : 'text-slate-400'}`}>{cinema}</div><div className="text-xl font-black uppercase text-slate-500 tracking-widest leading-none mt-3">Boletos Cine</div></div>
+                                    </div>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mt-10">
                                 <div className="card-3d p-10">
-                                    <h2 className="text-4xl font-black text-slate-800 mb-10 flex items-center gap-4"><div className="p-4 rounded-3xl bg-amber-100 text-amber-500 shadow-lg"><SafeIcon name="PieChart" size={32} /></div>¿De dónde viene?</h2>
+                                    <h2 className="text-4xl font-black text-slate-800 mb-10 flex items-center gap-4 italic uppercase tracking-tighter"><SafeIcon name="PieChart" className="text-amber-500" size={32} /> ¿De dónde viene?</h2>
                                     <PieChartSources data={sourceData} />
                                 </div>
                                 <div className="card-3d p-10">
-                                    <h2 className="text-4xl font-black text-slate-800 mb-10 flex items-center gap-4"><div className={`p-4 rounded-3xl ${theme.bg} text-white shadow-lg`}><SafeIcon name="Mountain" size={32} /></div>Tu Montaña</h2>
+                                    <h2 className="text-4xl font-black text-slate-800 mb-10 flex items-center gap-4 italic uppercase tracking-tighter"><SafeIcon name="Mountain" className={theme.text} size={32} /> Tu Montaña</h2>
                                     <div className="h-[300px]"><GrowthLineChart data={growthHistoryData} color={theme.chart} /></div>
                                 </div>
                             </div>
 
+                            {/* Logros */}
+                            <div className="card-3d p-12 mt-10 border-t-8 border-amber-300">
+                                <h2 className="text-5xl font-black text-slate-800 tracking-tight mb-12 flex items-center gap-5 italic uppercase"><SafeIcon name="Award" className="text-amber-500" size={48} /> Mis Logros</h2>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    {(activeProfile.achievements || []).map((medal) => {
+                                        const check = medal.type === 'ahorro' ? contributed >= medal.target : gain >= medal.target;
+                                        const progress = Math.min(100, (medal.type === 'ahorro' ? contributed : gain) / medal.target * 100);
+                                        return (
+                                            <div key={medal.id} className={`medal-slot p-8 rounded-[3rem] flex flex-row items-center gap-8 border-4 transition-all group ${check ? 'medal-unlocked border-yellow-300 bg-yellow-50 shadow-[0_12px_0_0_#fde047]' : 'medal-locked border-slate-200 bg-slate-50 shadow-[0_12px_0_0_#e2e8f0]'}`}>
+                                                <div className={`p-8 rounded-[2.5rem] shadow-xl transition-transform duration-300 flex-shrink-0 ${check ? `bg-gradient-to-br ${medal.color} transform group-hover:scale-110 group-hover:rotate-12` : 'bg-slate-200 text-slate-400'}`}><SafeIcon name={medal.icon} color={check ? "white" : "currentColor"} size={64} /></div>
+                                                <div className="flex-1 text-left"><span className={`text-3xl font-black uppercase leading-tight tracking-widest block mb-4 ${check ? 'text-slate-800' : 'text-slate-400'}`}>{medal.label}</span>
+                                                    <div className="w-full bg-slate-200 h-6 rounded-full overflow-hidden shadow-inner mb-3"><div className={`h-full transition-all duration-1000 ${check ? 'bg-yellow-400' : 'bg-slate-400'}`} style={{width: `${progress}%`}}></div></div>
+                                                    <div className={`text-lg font-bold uppercase tracking-widest ${check ? 'text-yellow-600' : 'text-slate-400'}`}>{check ? '¡Desbloqueado! 🏆' : `Meta: $${(medal.target || 0).toLocaleString()}`}</div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
                             <div className="mt-12 space-y-8">
-                                <h2 className="text-4xl font-black text-slate-800 flex items-center gap-4 px-2 italic"><SafeIcon name="Heart" color="#ef4444" className="fill-red-500" size={40} /> Mis Sueños</h2>
+                                <h2 className="text-4xl font-black text-slate-800 flex items-center gap-4 px-2 italic uppercase tracking-tighter"><SafeIcon name="Heart" color="#ef4444" className="fill-red-500" size={40} /> Mis Sueños</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                     {(activeProfile.goals || []).map(g => {
                                         const isCompleted = currentBalance >= g.target;
@@ -426,7 +407,7 @@
                                                     <h3 className="font-black text-3xl text-slate-800 leading-none truncate pr-4 italic tracking-tighter">{g.name}</h3>
                                                 </div>
                                                 <div className="w-full bg-slate-100 h-10 rounded-full overflow-hidden border-4 border-slate-100 shadow-inner"><div className={`h-full transition-all duration-1000 ${isCompleted ? 'bg-green-500' : theme.bg}`} style={{width: `${progress}%`}}></div></div>
-                                                <div className="flex justify-between font-black text-xl mt-4 px-2 uppercase italic tracking-tighter"><span>${(currentBalance || 0).toLocaleString()}</span><span className={theme.text}>Meta: ${(g.target || 0).toLocaleString()}</span></div>
+                                                <div className="flex justify-between font-black text-xl mt-4 px-2 uppercase italic tracking-tighter"><span>${currentBalance.toLocaleString()}</span><span className={theme.text}>Meta: ${g.target.toLocaleString()}</span></div>
                                                 {isCompleted && <div className="mt-6 text-center text-green-600 font-black text-2xl animate-bounce uppercase">¡Logrado! 🏆</div>}
                                             </div>
                                         );
@@ -437,27 +418,26 @@
                         </div>
 
                         {/* Modales */}
-                        {showAddModal && <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[100] fade-in"><div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl border-8 border-indigo-50 text-center"><h2 className="text-5xl font-black mb-10 text-indigo-600 uppercase italic tracking-tighter">¡Sumar!</h2><input type="number" value={newAmount} onChange={e=>setNewAmount(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none text-6xl font-black text-center mb-6 focus:border-indigo-500" placeholder="0" autoFocus /><input type="text" value={newNote} onChange={e=>setNewNote(e.target.value)} className="w-full p-6 bg-slate-50 border-4 border-slate-100 rounded-[2rem] outline-none font-black text-2xl text-center mb-8 focus:border-indigo-500" placeholder="¿De dónde salió?" /><div className="flex gap-4"><button onClick={()=>setShowAddModal(false)} className="flex-1 py-6 font-black text-slate-400 uppercase tracking-widest">Cerrar</button><button onClick={handleAddSaving} className={`flex-2 py-6 font-black ${theme.bg} text-white rounded-[2rem] text-3xl btn-3d ${theme.shadow}`}>Listo</button></div></div></div>}
+                        {showAddModal && <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[100] fade-in"><div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl border-8 border-indigo-50 text-center uppercase tracking-tighter"><h2 className="text-5xl font-black mb-10 text-indigo-600 italic">¡Sumar!</h2><input type="number" value={newAmount} onChange={e=>setNewAmount(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none text-6xl font-black text-center mb-6 focus:border-indigo-500" placeholder="0" autoFocus /><input type="text" value={newNote} onChange={e=>setNewNote(e.target.value)} className="w-full p-6 bg-slate-50 border-4 border-slate-100 rounded-[2rem] outline-none font-black text-2xl text-center mb-8 focus:border-indigo-500" placeholder="¿De dónde salió?" /><div className="flex gap-4"><button onClick={()=>setShowAddModal(false)} className="flex-1 py-6 font-black text-slate-400 uppercase tracking-widest leading-none">Cerrar</button><button onClick={handleAddSaving} className={`flex-2 py-6 font-black ${theme.bg} text-white rounded-[2rem] text-3xl btn-3d ${theme.shadow}`}>Listo</button></div></div></div>}
                         
                         {showAdminModal && (
-                            <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-2xl flex items-center justify-center p-4 z-[100] fade-in text-center"><div className="bg-white rounded-[4rem] p-10 max-w-3xl w-full shadow-2xl border-[12px] border-slate-100 overflow-y-auto max-h-[90vh] custom-scrollbar"><div className="flex items-center gap-6 mb-10 pb-8 border-b-4 border-slate-50"><div className="p-5 bg-indigo-600 text-white rounded-[2rem] shadow-xl"><SafeIcon name="ShieldCheck" size={48} /></div><h2 className="text-4xl font-black text-slate-800 tracking-tighter uppercase leading-none italic">Panel Papá</h2></div>
-                                <div className="flex gap-4 mb-10 bg-slate-100 p-3 rounded-[2.5rem] overflow-x-auto custom-scrollbar">{['balance', 'history', 'config'].map(tab => (<button key={tab} onClick={() => setAdminTab(tab)} className={`flex-1 py-4 px-6 font-black rounded-[2rem] text-lg transition-all min-w-[120px] ${adminTab===tab?'bg-white shadow-xl text-indigo-600':'text-slate-400'}`}>{tab==='balance'?'Saldo Real':tab==='history'?'Registros':'Ajustes'}</button>))}</div>
+                            <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-2xl flex items-center justify-center p-4 z-[100] fade-in text-center uppercase tracking-tighter"><div className="bg-white rounded-[4rem] p-10 max-w-3xl w-full shadow-2xl border-[12px] border-slate-100 overflow-y-auto max-h-[95vh] custom-scrollbar"><div className="flex items-center gap-6 mb-10 pb-8 border-b-4 border-slate-50"><div className="p-5 bg-indigo-600 text-white rounded-[2rem] shadow-xl"><SafeIcon name="ShieldCheck" size={48} /></div><h2 className="text-4xl font-black text-slate-800 tracking-tighter leading-none italic">Panel Papá</h2></div>
+                                <div className="flex gap-2 mb-10 bg-slate-100 p-2 rounded-[2.5rem] overflow-x-auto custom-scrollbar">{['balance', 'history', 'achievements', 'config'].map(tab => (<button key={tab} onClick={() => setAdminTab(tab)} className={`flex-1 py-4 px-4 font-black rounded-[2rem] text-sm transition-all min-w-[100px] ${adminTab===tab?'bg-white shadow-xl text-indigo-600':'text-slate-400'}`}>{tab==='balance'?'Saldo Real':tab==='history'?'Registros':tab==='achievements'?'Logros':'Ajustes'}</button>))}</div>
                                 
-                                {adminTab==='balance' && <div className="space-y-10 py-4"><div className="text-center"><label className="text-xs font-black uppercase text-slate-400 block mb-3 tracking-widest italic">Saldo Actual en CetesDirecto ($)</label><input type="number" value={adminRealBalance} onChange={e=>setAdminRealBalance(e.target.value)} className="w-full p-12 bg-slate-50 border-8 border-slate-100 rounded-[4rem] outline-none text-8xl font-black text-center focus:border-indigo-500" placeholder="0.00" /></div><button onClick={handleAdminSync} className="w-full py-10 font-black bg-indigo-600 text-white rounded-[3.5rem] text-4xl shadow-[0_15px_0_0_#1e1b4b] active:top-2 relative uppercase italic tracking-widest leading-none">Sincronizar Nube</button></div>}
-                                
-                                {adminTab==='history' && <div className="space-y-4 py-4 pr-4 custom-scrollbar">{(combinedRecords || []).map(r => (<div key={r.id} className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border-4 border-slate-100"><div className="flex items-center gap-4 text-left"><div className={`p-4 rounded-2xl ${r.bg} ${r.color}`}><SafeIcon name={r.icon} size={28} /></div><div><p className="font-black text-xl text-slate-700 leading-none">{r.note}</p><p className="text-[10px] font-black text-slate-400 mt-2 tracking-widest uppercase italic">{r.type} - {r.date}</p></div></div><div className="flex items-center gap-6 font-black text-2xl ${r.color} tracking-tighter">${(r.amount || 0).toLocaleString()}<button onClick={()=>deleteRecord(r.id, r.type)} className="p-3 bg-white border-2 border-slate-200 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm"><SafeIcon name="Trash2" /></button></div></div>))}</div>}
-                                
+                                {adminTab==='balance' && <div className="space-y-10 py-4"><div className="text-center"><label className="text-xs font-black uppercase text-slate-400 block mb-3 tracking-widest italic">Saldo Actual en CetesDirecto ($)</label><input type="number" value={adminRealBalance} onChange={e=>setAdminRealBalance(e.target.value)} className="w-full p-12 bg-slate-50 border-8 border-slate-100 rounded-[4rem] outline-none text-8xl font-black text-center focus:border-indigo-500" placeholder="0.00" /></div><button onClick={handleAdminSync} className="w-full py-10 font-black bg-indigo-600 text-white rounded-[3.5rem] text-4xl shadow-[0_15px_0_0_#1e1b4b] active:top-2 relative tracking-widest leading-none">Sincronizar Nube</button></div>}
+                                {adminTab==='history' && <div className="space-y-4 py-4 pr-4">{combinedRecords.map(r => (<div key={r.id} className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border-4 border-slate-100"><div className="flex items-center gap-4 text-left"><div className={`p-4 rounded-2xl ${r.bg} ${r.color}`}><SafeIcon name={r.icon} size={28} /></div><div><p className="font-black text-xl text-slate-700 leading-none">{r.note}</p><p className="text-[10px] font-black text-slate-400 mt-2 tracking-widest uppercase italic">{r.type} - {r.date}</p></div></div><div className="flex items-center gap-6 font-black text-2xl ${r.color} tracking-tighter">${(r.amount || 0).toLocaleString()}<button onClick={()=>deleteRecord(r.id, r.type)} className="p-3 bg-white border-2 border-slate-200 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm"><SafeIcon name="Trash2" /></button></div></div>))}</div>}
+                                {adminTab==='achievements' && <div className="space-y-8 py-4"><div className="bg-indigo-50 p-8 rounded-[3rem] border-4 border-indigo-100 mb-6 text-center"><h3 className="font-black text-indigo-800 mb-6 text-2xl tracking-tighter uppercase italic">Nuevo Logro</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><input type="text" placeholder="Nombre" value={newAchName} onChange={e=>setNewAchName(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-xl outline-none" /><input type="number" placeholder="Meta $" value={newAchTarget} onChange={e=>setNewAchTarget(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-xl outline-none" /></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"><select value={newAchType} onChange={e=>setNewAchType(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-slate-600 text-xl"><option value="ahorro">Por Ahorro</option><option value="ganancia">Por Ganancia</option></select><select value={newAchIcon} onChange={e=>setNewAchIcon(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-slate-600 text-xl"><option value="Trophy">🏆 Trofeo</option><option value="Star">⭐ Estrella</option><option value="Rocket">🚀 Cohete</option><option value="Gem">💎 Diamante</option></select></div><button onClick={handleAddAchievement} className="w-full py-6 bg-indigo-600 text-white font-black text-xl rounded-2xl shadow-lg">AÑADIR LOGRO</button></div><div className="space-y-4 max-h-80 overflow-y-auto pr-4">{ (activeProfile.achievements || []).map(ach => (<div key={ach.id} className="flex justify-between items-center bg-white p-6 rounded-[2rem] border-4 border-slate-100 shadow-sm text-left"><div className="flex items-center gap-5"><div className={`p-4 rounded-full bg-gradient-to-br ${ach.color}`}><SafeIcon name={ach.icon} color="white" /></div><div><div className="font-black text-2xl text-slate-700">{ach.label}</div><div className="text-sm font-bold text-slate-400 uppercase tracking-widest">{ach.type}: ${ach.target.toLocaleString()}</div></div></div><button onClick={() => deleteAchievement(ach.id)} className="p-4 text-red-400 bg-red-50 hover:bg-red-500 hover:text-white rounded-2xl transition-all shadow-sm"><SafeIcon name="Trash2" /></button></div>)) }</div></div>}
                                 {adminTab==='config' && <div className="space-y-8 py-4"><div className="grid grid-cols-1 md:grid-cols-2 gap-8"><div className="bg-rose-50 p-8 rounded-[3rem] border-4 border-rose-100"><label className="font-black text-rose-600 block mb-4 uppercase text-xs tracking-widest italic">Helado $</label><input type="number" defaultValue={activeProfile.config?.iceCreamPrice} onBlur={(e) => updateConfig('iceCreamPrice', e.target.value)} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-rose-200 text-5xl text-center outline-none" /></div><div className="bg-blue-50 p-8 rounded-[3rem] border-4 border-blue-100"><label className="font-black text-blue-600 block mb-4 uppercase text-xs tracking-widest italic">Cine $</label><input type="number" defaultValue={activeProfile.config?.moviePrice} onBlur={(e) => updateConfig('moviePrice', e.target.value)} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-blue-200 text-5xl text-center outline-none" /></div></div></div>}
-                                <button onClick={()=>setShowAdminModal(false)} className="w-full mt-12 py-8 font-black bg-slate-100 text-slate-400 rounded-[3rem] text-2xl uppercase italic tracking-widest">Cerrar</button>
+                                <button onClick={()=>setShowAdminModal(false)} className="w-full mt-12 py-8 font-black bg-slate-100 text-slate-400 rounded-[3rem] text-2xl uppercase tracking-widest leading-none">Cerrar</button>
                             </div></div>
                         )}
 
                         {showSettingsModal && (
-                            <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[70] fade-in"><div className="bg-white rounded-[4rem] p-10 max-w-lg w-full shadow-2xl border-[10px] border-slate-50 text-center uppercase tracking-tighter"><h2 className="text-4xl font-black mb-10 text-slate-800 leading-none italic">Tu Perfil</h2><div className="flex gap-4 justify-center flex-wrap mb-10">{Object.keys(colorThemes).map(c => (<button key={c} onClick={() => setNewTheme(c)} className={`w-12 h-12 rounded-full transition-all transform ${colorThemes[c].bg} ${newTheme === c ? 'ring-[8px] ring-slate-200 scale-125' : 'opacity-40'}`} />))}</div><div className="flex gap-2 justify-center flex-wrap bg-slate-50 p-6 rounded-[2.5rem] max-h-48 overflow-y-auto custom-scrollbar">{availableEmojis.map(e => (<span key={e} onClick={() => setNewEmoji(e)} className={`emoji-option ${newEmoji === e ? 'emoji-selected' : ''} flex items-center justify-center`}>{e}</span>))}</div><div className="flex gap-4 pt-8"><button onClick={()=>setShowSettingsModal(false)} className="flex-1 py-6 font-black bg-slate-100 text-slate-400 uppercase tracking-widest">Cerrar</button><button onClick={async ()=>{await saveToCloud({...activeProfile, theme:newTheme, emoji:newEmoji}); setShowSettingsModal(false);}} className="flex-2 py-6 font-black bg-indigo-600 text-white rounded-[2rem] shadow-xl tracking-widest btn-3d shadow-[0_8px_0_0_#1e1b4b]">Guardar</button></div></div></div>
+                            <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[70] fade-in text-center uppercase tracking-tighter"><div className="bg-white rounded-[4rem] p-10 max-w-lg w-full shadow-2xl border-[10px] border-slate-50 text-center"><h2 className="text-4xl font-black mb-10 text-slate-800 leading-none italic italic">Tu Perfil</h2><div className="flex gap-4 justify-center flex-wrap mb-10">{Object.keys(colorThemes).map(c => (<button key={c} onClick={() => setNewTheme(c)} className={`w-12 h-12 rounded-full transition-all transform ${colorThemes[c].bg} ${newTheme === c ? 'ring-[8px] ring-slate-200 scale-125' : 'opacity-40'}`} />))}</div><div className="flex gap-2 justify-center flex-wrap bg-slate-50 p-6 rounded-[2.5rem] max-h-48 overflow-y-auto custom-scrollbar">{availableEmojis.map(e => (<span key={e} onClick={() => setNewEmoji(e)} className={`emoji-option ${newEmoji === e ? 'emoji-selected' : ''} flex items-center justify-center`}>{e}</span>))}</div><div className="flex gap-4 pt-8"><button onClick={()=>setShowSettingsModal(false)} className="flex-1 py-6 font-black bg-slate-100 text-slate-400 uppercase tracking-widest leading-none">Cerrar</button><button onClick={async ()=>{await saveToCloud({...activeProfile, theme:newTheme, emoji:newEmoji}); setShowSettingsModal(false);}} className="flex-2 py-6 font-black bg-indigo-600 text-white rounded-[2rem] shadow-xl tracking-widest btn-3d shadow-[0_8px_0_0_#1e1b4b]">Guardar</button></div></div></div>
                         )}
 
                         {showGoalModal && (
-                            <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[100] fade-in text-center"><div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl border-8 border-indigo-50 text-center uppercase tracking-tighter"><h2 className="text-5xl font-black mb-10 text-indigo-600 leading-none italic">Nuevo Sueño</h2><input type="text" value={newGoalName} onChange={e=>setNewGoalName(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none font-black text-3xl text-center mb-4" placeholder="¿Qué sueñas?" /><input type="number" value={newGoalTarget} onChange={e=>setNewGoalTarget(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none text-6xl font-black text-center" placeholder="$ Costo" /><div className="flex gap-4 mt-8"><button onClick={()=>setShowGoalModal(false)} className="flex-1 py-6 font-black text-slate-400 uppercase tracking-widest">Cerrar</button><button onClick={handleSaveGoal} className={`flex-2 py-6 px-10 font-black ${theme.bg} text-white rounded-[2rem] text-2xl btn-3d ${theme.shadow}`}>Guardar</button></div></div></div>
+                            <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[100] fade-in text-center uppercase tracking-tighter"><div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl border-8 border-indigo-50 text-center uppercase"><h2 className="text-5xl font-black mb-10 text-indigo-600 leading-none italic italic">Nuevo Sueño</h2><input type="text" value={newGoalName} onChange={e=>setNewGoalName(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none font-black text-3xl text-center mb-4" placeholder="¿Qué sueñas?" /><input type="number" value={newGoalTarget} onChange={e=>setNewGoalTarget(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none text-6xl font-black text-center" placeholder="$ Costo" /><div className="flex gap-4 mt-8"><button onClick={()=>setShowGoalModal(false)} className="flex-1 py-6 font-black text-slate-400 uppercase tracking-widest leading-none">Cerrar</button><button onClick={handleSaveGoal} className={`flex-2 py-6 px-10 font-black ${theme.bg} text-white rounded-[2rem] text-2xl btn-3d ${theme.shadow}`}>Guardar</button></div></div></div>
                         )}
                     </div>
                 );
