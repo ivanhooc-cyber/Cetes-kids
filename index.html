@@ -33,7 +33,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Estilos 3D Pro */
         .card-3d {
             background: white;
             border-radius: 2.5rem;
@@ -113,11 +112,11 @@
     <script>
         window.USER_FIREBASE_CONFIG = {
             apiKey: "AIzaSyCgh9G37P75Z1L53JZzI2jjL4GBgcV74Pk",
-  authDomain: "ceteskids.firebaseapp.com",
-  projectId: "ceteskids",
-  storageBucket: "ceteskids.firebasestorage.app",
-  messagingSenderId: "819262734652",
-  appId: "1:819262734652:web:c385b1479ea83448975e39"
+  authDomain: "ceteskids.firebaseapp.com",
+  projectId: "ceteskids",
+  storageBucket: "ceteskids.firebasestorage.app",
+  messagingSenderId: "819262734652",
+  appId: "1:819262734652:web:c385b1479ea83448975e39"
         };
         window.USER_APP_ID = "ahorros-majo-ivanna-2024";
     </script>
@@ -148,7 +147,8 @@
                 amber: { bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-50', border: 'border-amber-200', shadow: 'shadow-[0_8px_0_0_#d97706]', gradient: 'from-amber-400 to-orange-600', chart: '#fbbf24' }
             };
 
-            const availableEmojis = ['👧', '👦', '😎', '🤩', '🤠', '👻', '🤖', '🎨', '🍦', '🎮', '🦄', '🐱', '🐶', '🐰', '🦊', '🦋', '⭐', '✨', '🪄', '🚀', '🌈', '💎', '👑', '💃', '🛹', '🧩', '🧸'];
+            const achievementColors = ['from-yellow-400 to-orange-600', 'from-emerald-400 to-teal-600', 'from-purple-400 to-fuchsia-600', 'from-sky-400 to-indigo-600'];
+            const availableEmojis = ['👧', '👦', '😎', '🤩', '🤠', '👻', '🤖', '🎨', '🍦', '🎮', '🦄', '🐱', '🐶', '🐰', '🦊', '⭐', '✨', '🪄', '🚀', '🌈', '💎', '👑', '💃', '🛹', '🧩', '🧸'];
 
             const PieChartSources = ({ data }) => {
                 if (!data || data.length === 0) return <div className="text-center py-8 text-slate-400 font-bold italic">¡Aún no hay ahorros!</div>;
@@ -233,6 +233,12 @@
                 const [newGoalTarget, setNewGoalTarget] = useState('');
                 const [editingGoalId, setEditingGoalId] = useState(null);
 
+                // Estados de Logros Nuevos
+                const [newAchName, setNewAchName] = useState('');
+                const [newAchTarget, setNewAchTarget] = useState('');
+                const [newAchType, setNewAchType] = useState('ahorro');
+                const [newAchIcon, setNewAchIcon] = useState('Trophy');
+
                 const appId = window.USER_APP_ID;
 
                 useEffect(() => {
@@ -255,7 +261,9 @@
                 useEffect(() => {
                     if (!user || !db) return;
                     const { collection, query, onSnapshot, doc, setDoc } = window.FirebaseSDK;
-                    const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'profiles'));
+                    const profilesCol = collection(db, 'artifacts', appId, 'public', 'data', 'profiles');
+                    const q = query(profilesCol);
+                    
                     const unsubscribe = onSnapshot(q, (snapshot) => {
                         const loaded = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
                         if (loaded.length === 0) {
@@ -286,8 +294,16 @@
 
                 const growthHistoryData = useMemo(() => {
                     if (!activeProfile.snapshots) return [];
-                    return [...activeProfile.snapshots].sort((a,b) => a.time - b.time);
+                    return [...activeProfile.snapshots].sort((a,b) => (a.time || 0) - (b.time || 0));
                 }, [activeProfile.snapshots]);
+
+                const combinedRecords = useMemo(() => {
+                    if (!activeProfile.id) return [];
+                    return [
+                        ...(activeProfile.history || []).map(h => ({ ...h, type: 'Ahorro', color: 'text-green-500', bg: 'bg-green-100', icon: 'Coins' })),
+                        ...(activeProfile.snapshots || []).map(s => ({ ...s, amount: s.balance, note: 'Sincronización Real', type: 'Ajuste', color: 'text-indigo-500', bg: 'bg-indigo-100', icon: 'ShieldCheck' }))
+                    ].sort((a, b) => (b.time || 0) - (a.time || 0));
+                }, [activeProfile.history, activeProfile.snapshots]);
 
                 const saveToCloud = async (data) => {
                     if (!user || !db || !data.id) return;
@@ -295,22 +311,42 @@
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', String(data.id)), data);
                 };
 
+                const recalculate = (p) => {
+                    const history = p.history || [];
+                    const snapshots = p.snapshots || [];
+                    const allEvents = [...history.map(h => ({...h, type:'c', time: h.time || 0})), ...snapshots.map(s => ({...s, type:'s', time: s.time || 0}))].sort((a,b) => a.time - b.time);
+                    let balance = 0, contributed = 0;
+                    allEvents.forEach(ev => {
+                        if(ev.type==='c') { contributed += (ev.amount || 0); balance += (ev.amount || 0); }
+                        else balance = (ev.balance || 0);
+                    });
+                    return {...p, realBalance: balance, totalContributed: contributed};
+                };
+
                 const handleAddSaving = async () => {
                     const amount = parseFloat(newAmount);
                     if (isNaN(amount)) return;
-                    const newHistory = [...(activeProfile.history || []), { id: Date.now().toString(), time: Date.now(), date: new Date().toLocaleDateString(), amount, note: newNote || 'Ahorro' }];
-                    const newTotal = (activeProfile.totalContributed || 0) + amount;
-                    const newReal = (activeProfile.realBalance || 0) + amount;
-                    await saveToCloud({...activeProfile, history: newHistory, totalContributed: newTotal, realBalance: newReal});
+                    const now = Date.now();
+                    const newHistory = [...(activeProfile.history || []), { id: now.toString(), time: now, date: new Date().toLocaleDateString(), amount, note: newNote || 'Ahorro' }];
+                    await saveToCloud(recalculate({...activeProfile, history: newHistory}));
                     setNewAmount(''); setNewNote(''); setShowAddModal(false);
                 };
 
                 const handleAdminSync = async () => {
                     const val = parseFloat(adminRealBalance);
                     if (isNaN(val)) return;
-                    const newSnapshots = [...(activeProfile.snapshots || []), { time: Date.now(), balance: val }];
-                    await saveToCloud({...activeProfile, snapshots: newSnapshots, realBalance: val});
+                    const now = Date.now();
+                    const newSnapshots = [...(activeProfile.snapshots || []), { id: now.toString(), time: now, date: new Date().toLocaleDateString(), balance: val }];
+                    await saveToCloud(recalculate({...activeProfile, snapshots: newSnapshots}));
                     setAdminRealBalance(''); setShowAdminModal(false);
+                };
+
+                const deleteRecord = async (id, type) => {
+                    let newHistory = activeProfile.history || [];
+                    let newSnapshots = activeProfile.snapshots || [];
+                    if(type==='Ahorro') newHistory = newHistory.filter(h => h.id !== id);
+                    else newSnapshots = newSnapshots.filter(s => s.id !== id);
+                    await saveToCloud(recalculate({...activeProfile, history: newHistory, snapshots: newSnapshots}));
                 };
 
                 const handleSaveGoal = async () => {
@@ -322,10 +358,17 @@
                     setNewGoalName(''); setNewGoalTarget(''); setEditingGoalId(null); setShowGoalModal(false);
                 };
 
-                const deleteRecord = async (id) => {
-                    const newHistory = activeProfile.history.filter(h => h.id !== id);
-                    const newTotal = newHistory.reduce((sum, h) => sum + h.amount, 0);
-                    await saveToCloud({...activeProfile, history: newHistory, totalContributed: newTotal});
+                const handleAddAchievement = async () => {
+                    if (!newAchName || !newAchTarget) return;
+                    const currentAchs = activeProfile.achievements || [];
+                    const newAch = { id: Date.now().toString(), label: newAchName, target: parseFloat(newAchTarget), type: newAchType, icon: newAchIcon, color: achievementColors[currentAchs.length % achievementColors.length] };
+                    await saveToCloud({...activeProfile, achievements: [...currentAchs, newAch]});
+                    setNewAchName(''); setNewAchTarget('');
+                };
+
+                const deleteAchievement = async (id) => {
+                    const newAchs = (activeProfile.achievements || []).filter(a => a.id !== id);
+                    await saveToCloud({...activeProfile, achievements: newAchs});
                 };
 
                 if (loading) return <div className="h-screen flex items-center justify-center font-black text-2xl text-indigo-600 animate-pulse uppercase tracking-tighter">CARGANDO NUBE FAMILIAR...</div>;
@@ -347,7 +390,7 @@
                                     </button>
                                 ))}
                                 <button onClick={() => { setNewTheme(activeProfile.theme); setNewEmoji(activeProfile.emoji); setShowSettingsModal(true); }} className={`p-4 ${theme.bg} text-white rounded-2xl shadow-lg btn-3d ${theme.shadow}`}><SafeIcon name="Palette" size={20} /></button>
-                                <button onClick={() => setShowAdminModal(true)} className="p-4 bg-slate-800 text-white rounded-2xl shadow-lg btn-3d shadow-[0_8px_0_0_#000]"><SafeIcon name="ShieldCheck" size={20} /></button>
+                                <button onClick={() => { setAdminRealBalance(currentBalance); setShowAdminModal(true); }} className="p-4 bg-slate-800 text-white rounded-2xl shadow-lg btn-3d shadow-[0_8px_0_0_#000]"><SafeIcon name="ShieldCheck" size={20} /></button>
                             </div>
 
                             <header className={`flex flex-col md:flex-row justify-between items-center mb-10 gap-8 bg-gradient-to-br ${theme.gradient} p-12 rounded-[4rem] text-white shadow-2xl relative overflow-hidden`}>
@@ -358,7 +401,7 @@
                                         <p className="text-white/80 text-xl font-bold italic tracking-wide">🚀 ¡Tu tesoro está creciendo!</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowAddModal(true)} className="relative z-10 bg-white text-slate-900 px-14 py-8 rounded-[3rem] font-black text-3xl shadow-[0_15px_0_0_#f1f5f9] active:translate-y-3 transition-all flex items-center gap-4 uppercase"><SafeIcon name="PlusCircle" className={theme.text} size={40} /> ¡Sumar!</button>
+                                <button onClick={() => setShowAddModal(true)} className="relative z-10 bg-white text-slate-900 px-14 py-8 rounded-[3rem] font-black text-3xl shadow-[0_15px_0_0_#f1f5f9] active:translate-y-3 transition-all flex items-center gap-4 uppercase tracking-tighter"><SafeIcon name="PlusCircle" className={theme.text} size={40} /> ¡Sumar!</button>
                             </header>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -392,7 +435,7 @@
                                         const isCompleted = currentBalance >= g.target;
                                         const progress = Math.min(100, (currentBalance / g.target) * 100);
                                         return (
-                                            <div key={g.id} className={`card-3d p-10 border-8 relative group transition-all ${isCompleted ? 'border-green-400 bg-green-50 shadow-[0_12px_0_0_#22c55e]' : 'border-white'}`}>
+                                            <div key={g.id} className={`card-3d p-10 border-8 relative group transition-all ${isCompleted ? 'border-green-400 bg-green-50 shadow-[0_12px_0_0_#22c55e]' : 'border-white shadow-[0_12px_0_0_#cbd5e1]'}`}>
                                                 <div className="flex items-center gap-4 mb-6">
                                                     <div className={`p-4 rounded-2xl ${isCompleted ? 'bg-green-500 text-white shadow-md' : 'bg-slate-100 text-slate-400'}`}><SafeIcon name="Gift" size={32} /></div>
                                                     <h3 className="font-black text-3xl text-slate-800 leading-none truncate pr-4 italic tracking-tighter">{g.name}</h3>
@@ -413,10 +456,16 @@
                         
                         {showAdminModal && (
                             <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-2xl flex items-center justify-center p-4 z-[100] fade-in"><div className="bg-white rounded-[4rem] p-10 max-w-3xl w-full shadow-2xl border-[12px] border-slate-100 overflow-y-auto max-h-[90vh] custom-scrollbar"><div className="flex items-center gap-6 mb-10 pb-8 border-b-4 border-slate-50"><div className="p-5 bg-indigo-600 text-white rounded-[2rem] shadow-xl"><SafeIcon name="ShieldCheck" size={48} /></div><h2 className="text-4xl font-black text-slate-800 tracking-tighter uppercase leading-none italic">Panel Papá</h2></div>
-                                <div className="flex gap-4 mb-10 bg-slate-100 p-3 rounded-[2.5rem] overflow-x-auto custom-scrollbar">{['balance', 'history', 'config'].map(tab => (<button key={tab} onClick={() => setAdminTab(tab)} className={`flex-1 py-4 px-6 font-black rounded-[2rem] text-lg transition-all min-w-[120px] ${adminTab===tab?'bg-white shadow-xl text-indigo-600':'text-slate-400'}`}>{tab==='balance'?'Saldo Real':tab==='history'?'Registros':'Ajustes'}</button>))}</div>
+                                <div className="flex gap-4 mb-10 bg-slate-100 p-3 rounded-[2.5rem] overflow-x-auto custom-scrollbar">{['balance', 'history', 'achievements', 'config'].map(tab => (<button key={tab} onClick={() => setAdminTab(tab)} className={`flex-1 py-4 px-6 font-black rounded-[2rem] text-lg transition-all min-w-[120px] ${adminTab===tab?'bg-white shadow-xl text-indigo-600':'text-slate-400'}`}>{tab==='balance'?'Saldo Real':tab==='history'?'Registros':tab==='achievements'?'Logros':'Ajustes'}</button>))}</div>
+                                
                                 {adminTab==='balance' && <div className="space-y-10 py-4"><div className="text-center"><label className="text-xs font-black uppercase text-slate-400 block mb-3 tracking-widest italic">Saldo Actual en CetesDirecto ($)</label><input type="number" value={adminRealBalance} onChange={e=>setAdminRealBalance(e.target.value)} className="w-full p-12 bg-slate-50 border-8 border-slate-100 rounded-[4rem] outline-none text-8xl font-black text-center focus:border-indigo-500" placeholder="0.00" /></div><button onClick={handleAdminSync} className="w-full py-10 font-black bg-indigo-600 text-white rounded-[3.5rem] text-4xl shadow-[0_15px_0_0_#1e1b4b] active:top-2 relative uppercase italic tracking-widest leading-none">Sincronizar Nube</button></div>}
-                                {adminTab==='history' && <div className="space-y-4 py-4 pr-4 custom-scrollbar">{(activeProfile.history || []).map(h => (<div key={h.id} className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border-4 border-slate-100"><div className="text-left font-black text-xl text-slate-700 tracking-tighter">{h.note || 'Ahorro'} <span className="text-xs text-slate-400 ml-2 italic tracking-widest">{h.date}</span></div><div className="flex items-center gap-6 font-black text-2xl text-green-500 tracking-tighter">${h.amount.toLocaleString()}<button onClick={()=>deleteRecord(h.id)} className="p-3 bg-white border-2 border-slate-200 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all"><SafeIcon name="Trash2" /></button></div></div>))}</div>}
-                                {adminTab==='config' && <div className="space-y-8 py-4 text-center"><div className="grid grid-cols-1 md:grid-cols-2 gap-8"><div className="bg-rose-50 p-8 rounded-[3rem] border-4 border-rose-100"><label className="font-black text-rose-600 block mb-4 uppercase text-xs tracking-widest italic">Helado $</label><input type="number" value={activeProfile.config?.iceCreamPrice} onChange={(e) => saveToCloud({...activeProfile, config:{...activeProfile.config, iceCreamPrice: parseFloat(e.target.value)}})} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-rose-200 text-5xl text-center outline-none" /></div><div className="bg-blue-50 p-8 rounded-[3rem] border-4 border-blue-100"><label className="font-black text-blue-600 block mb-4 uppercase text-xs tracking-widest italic">Cine $</label><input type="number" value={activeProfile.config?.moviePrice} onChange={(e) => saveToCloud({...activeProfile, config:{...activeProfile.config, moviePrice: parseFloat(e.target.value)}})} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-blue-200 text-5xl text-center outline-none" /></div></div></div>}
+                                
+                                {adminTab==='history' && <div className="space-y-4 py-4 pr-4 custom-scrollbar">{combinedRecords.map(r => (<div key={r.id} className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border-4 border-slate-100"><div className="flex items-center gap-4"><div className={`p-4 rounded-2xl ${r.bg} ${r.color}`}><SafeIcon name={r.icon} size={28} /></div><div><p className="font-black text-xl text-slate-700 leading-none">{r.note}</p><p className="text-[10px] font-black text-slate-400 mt-2 tracking-widest uppercase italic">{r.type} - {r.date}</p></div></div><div className="flex items-center gap-6"><span className={`text-3xl font-black ${r.color} tracking-tighter`}>${r.amount.toLocaleString()}</span><button onClick={()=>deleteRecord(r.id, r.type)} className="p-3 bg-white border-2 border-slate-200 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm"><SafeIcon name="Trash2" /></button></div></div>))}</div>}
+                                
+                                {adminTab==='achievements' && <div className="space-y-8 py-4"><div className="bg-indigo-50 p-8 rounded-[3rem] border-4 border-indigo-100 mb-6"><h3 className="font-black text-indigo-800 mb-6 text-2xl tracking-tighter uppercase italic">Nuevo Logro</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><input type="text" placeholder="Nombre" value={newAchName} onChange={e=>setNewAchName(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-xl outline-none" /><input type="number" placeholder="Meta $" value={newAchTarget} onChange={e=>setNewAchTarget(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-xl outline-none" /></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"><select value={newAchType} onChange={e=>setNewAchType(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-slate-600 text-xl"><option value="ahorro">Por Ahorro</option><option value="ganancia">Por Ganancia</option></select><select value={newAchIcon} onChange={e=>setNewAchIcon(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-slate-600 text-xl"><option value="Trophy">🏆 Trofeo</option><option value="Star">⭐ Estrella</option><option value="Rocket">🚀 Cohete</option><option value="Gem">💎 Diamante</option></select></div><button onClick={handleAddAchievement} className="w-full py-6 bg-indigo-600 text-white font-black text-xl rounded-2xl shadow-lg">AÑADIR LOGRO</button></div><div className="space-y-4 max-h-80 overflow-y-auto pr-4">{ (activeProfile.achievements || []).map(ach => (<div key={ach.id} className="flex justify-between items-center bg-white p-6 rounded-[2rem] border-4 border-slate-100 shadow-sm"><div className="flex items-center gap-5"><div className={`p-4 rounded-full bg-gradient-to-br ${ach.color}`}><SafeIcon name={ach.icon} color="white" /></div><div><div className="font-black text-2xl text-slate-700">{ach.label}</div><div className="text-sm font-bold text-slate-400 uppercase tracking-widest">{ach.type}: ${(ach.target || 0).toLocaleString()}</div></div></div><button onClick={() => deleteAchievement(ach.id)} className="p-4 text-red-400 bg-red-50 hover:bg-red-500 hover:text-white rounded-2xl transition-all"><SafeIcon name="Trash2" /></button></div>)) }</div></div>}
+                                
+                                {adminTab==='config' && <div className="space-y-8 py-4 text-center"><div className="grid grid-cols-1 md:grid-cols-2 gap-8"><div className="bg-rose-50 p-8 rounded-[3rem] border-4 border-rose-100"><label className="font-black text-rose-600 block mb-4 uppercase text-xs tracking-widest italic">Helado $</label><input type="number" value={activeProfile.config?.iceCreamPrice} onChange={(e) => updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', activeProfile.id), {config:{...activeProfile.config, iceCreamPrice: parseFloat(e.target.value)}})} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-rose-200 text-5xl text-center outline-none" /></div><div className="bg-blue-50 p-8 rounded-[3rem] border-4 border-blue-100"><label className="font-black text-blue-600 block mb-4 uppercase text-xs tracking-widest italic">Cine $</label><input type="number" value={activeProfile.config?.moviePrice} onChange={(e) => updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', activeProfile.id), {config:{...activeProfile.config, moviePrice: parseFloat(e.target.value)}})} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-blue-200 text-5xl text-center outline-none" /></div></div></div>}
+                                
                                 <button onClick={()=>setShowAdminModal(false)} className="w-full mt-12 py-8 font-black bg-slate-100 text-slate-400 rounded-[3rem] text-2xl uppercase italic tracking-widest">Cerrar</button>
                             </div></div>
                         )}
