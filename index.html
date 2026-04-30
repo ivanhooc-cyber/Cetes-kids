@@ -1,14 +1,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cetes Kids: Aventura en la Nube</title>
     
-    <!-- 🚀 Icono para el iPad/iPhone -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%234f46e5%22/><text y=%22.9em%22 x=%225%22 font-size=%2280%22>🚀</text></svg>">
-    <meta name="apple-mobile-web-app-title" content="Cetes Kids">
+    <!-- 🚀 Icono Mejorado para el iPad/iPhone -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%234f46e5'/%3E%3Ctext y='75' x='10' font-family='Arial' font-size='70'%3E🚀%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%234f46e5'/%3E%3Ctext y='75' x='10' font-family='Arial' font-size='70'%3E🚀%3C/text%3E%3C/svg%3E">
+    
+    <!-- Configuración modo App -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Cetes Kids">
 
     <!-- Bibliotecas Externas -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,6 +30,7 @@
             padding: 0;
             overflow-x: hidden;
             color: #1e293b;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* Estilos 3D Pro */
@@ -144,7 +148,7 @@
                 amber: { bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-50', border: 'border-amber-200', shadow: 'shadow-[0_8px_0_0_#d97706]', gradient: 'from-amber-400 to-orange-600', chart: '#fbbf24' }
             };
 
-            const availableEmojis = ['👧', '👦', '😎', '🤩', '🤠', '👻', '🤖', '🎨', '🍦', '🎮', '🦄', '🐱', '🐶', '🐰', '🦊', '⭐', '✨', '🪄', '🚀', '🌈', '💎', '👑', '💃', '🛹', '🧩', '🧸'];
+            const availableEmojis = ['👧', '👦', '😎', '🤩', '🤠', '👻', '🤖', '🎨', '🍦', '🎮', '🦄', '🐱', '🐶', '🐰', '🦊', '🦋', '⭐', '✨', '🪄', '🚀', '🌈', '💎', '👑', '💃', '🛹', '🧩', '🧸'];
 
             const PieChartSources = ({ data }) => {
                 if (!data || data.length === 0) return <div className="text-center py-8 text-slate-400 font-bold italic">¡Aún no hay ahorros!</div>;
@@ -324,18 +328,19 @@
                     await saveToCloud({...activeProfile, history: newHistory, totalContributed: newTotal});
                 };
 
-                if (loading) return <div className="h-screen flex items-center justify-center font-black text-2xl text-indigo-600 animate-pulse uppercase">CARGANDO NUBE FAMILIAR...</div>;
+                if (loading) return <div className="h-screen flex items-center justify-center font-black text-2xl text-indigo-600 animate-pulse uppercase tracking-tighter">CARGANDO NUBE FAMILIAR...</div>;
 
                 const currentBalance = activeProfile.realBalance || 0;
                 const contributed = activeProfile.totalContributed || 0;
                 const gain = Math.max(0, currentBalance - contributed);
-                const iceCream = Math.floor(gain / (activeProfile.config?.iceCreamPrice || 45));
+                const iceCreamPrice = activeProfile.config?.iceCreamPrice || 45;
+                const iceCream = Math.floor(gain / iceCreamPrice);
 
                 return (
                     <div className={`min-h-screen ${theme.light} p-4 md:p-8 fade-in transition-all duration-500`}>
                         <div className="max-w-7xl mx-auto">
                             {/* Barra Perfiles */}
-                            <div className="flex items-center gap-4 mb-8 bg-white/70 p-4 rounded-[2.5rem] border-4 border-white shadow-xl w-fit">
+                            <div className="flex items-center gap-4 mb-8 bg-white/70 backdrop-blur-md p-4 rounded-[2.5rem] border-4 border-white shadow-xl w-fit">
                                 {profiles.map(p => (
                                     <button key={p.id} onClick={() => setActiveProfileId(p.id)} className={`px-8 py-3 rounded-[1.5rem] font-black text-lg transition-all btn-3d ${activeProfileId === p.id ? `${colorThemes[p.theme].bg} text-white ${colorThemes[p.theme].shadow}` : 'bg-white text-slate-400'}`}>
                                         <span className="mr-2">{p.emoji || '⭐'}</span>{p.name}
@@ -346,7 +351,7 @@
                             </div>
 
                             <header className={`flex flex-col md:flex-row justify-between items-center mb-10 gap-8 bg-gradient-to-br ${theme.gradient} p-12 rounded-[4rem] text-white shadow-2xl relative overflow-hidden`}>
-                                <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                                <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
                                     <div className="bg-white/30 p-8 rounded-[3rem] text-7xl animate-float shadow-2xl">{activeProfile.emoji || '🚀'}</div>
                                     <div>
                                         <h1 className="text-6xl font-black mb-2 tracking-tighter leading-none italic">¡Hola, {activeProfile.name}!</h1>
@@ -392,7 +397,7 @@
                                                     <div className={`p-4 rounded-2xl ${isCompleted ? 'bg-green-500 text-white shadow-md' : 'bg-slate-100 text-slate-400'}`}><SafeIcon name="Gift" size={32} /></div>
                                                     <h3 className="font-black text-3xl text-slate-800 leading-none truncate pr-4 italic tracking-tighter">{g.name}</h3>
                                                 </div>
-                                                <div className="w-full bg-slate-200 h-10 rounded-full overflow-hidden border-4 border-white shadow-inner"><div className={`h-full transition-all duration-1000 ${isCompleted ? 'bg-green-500' : theme.bg}`} style={{width: `${progress}%`}}></div></div>
+                                                <div className="w-full bg-slate-100 h-10 rounded-full overflow-hidden border-4 border-slate-100 shadow-inner"><div className={`h-full transition-all duration-1000 ${isCompleted ? 'bg-green-500' : theme.bg}`} style={{width: `${progress}%`}}></div></div>
                                                 <div className="flex justify-between font-black text-xl mt-4 px-2 uppercase italic tracking-tighter"><span>${currentBalance.toLocaleString()}</span><span className={theme.text}>Meta: ${g.target.toLocaleString()}</span></div>
                                                 {isCompleted && <div className="mt-6 text-center text-green-600 font-black text-2xl animate-bounce">¡LOGRADO! 🏆</div>}
                                             </div>
@@ -404,24 +409,24 @@
                         </div>
 
                         {/* Modales */}
-                        {showAddModal && <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[100] fade-in"><div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl border-8 border-indigo-50 text-center"><h2 className="text-5xl font-black mb-10 text-indigo-600 uppercase italic tracking-tighter">¡Sumar!</h2><input type="number" value={newAmount} onChange={e=>setNewAmount(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none text-6xl font-black text-center mb-6 focus:border-indigo-500" placeholder="0" autoFocus /><input type="text" value={newNote} onChange={e=>setNewNote(e.target.value)} className="w-full p-6 bg-slate-50 border-4 border-slate-100 rounded-[2rem] outline-none font-black text-2xl text-center mb-8 focus:border-indigo-500" placeholder="¿De dónde salió?" /><div className="flex gap-4"><button onClick={()=>setShowAddModal(false)} className="flex-1 py-6 font-black text-slate-400">Cerrar</button><button onClick={handleAddSaving} className={`flex-2 py-6 font-black ${theme.bg} text-white rounded-[2rem] text-3xl btn-3d ${theme.shadow}`}>Listo</button></div></div></div>}
+                        {showAddModal && <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[100] fade-in"><div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl border-8 border-indigo-50 text-center"><h2 className="text-5xl font-black mb-10 text-indigo-600 uppercase italic tracking-tighter">¡Sumar!</h2><input type="number" value={newAmount} onChange={e=>setNewAmount(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none text-6xl font-black text-center mb-6 focus:border-indigo-500" placeholder="0" autoFocus /><input type="text" value={newNote} onChange={e=>setNewNote(e.target.value)} className="w-full p-6 bg-slate-50 border-4 border-slate-100 rounded-[2rem] outline-none font-black text-2xl text-center mb-8 focus:border-indigo-500" placeholder="¿De dónde salió?" /><div className="flex gap-4"><button onClick={()=>setShowAddModal(false)} className="flex-1 py-6 font-black text-slate-400 uppercase tracking-widest">Cerrar</button><button onClick={handleAddSaving} className={`flex-2 py-6 font-black ${theme.bg} text-white rounded-[2rem] text-3xl btn-3d ${theme.shadow}`}>Listo</button></div></div></div>}
                         
                         {showAdminModal && (
                             <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-2xl flex items-center justify-center p-4 z-[100] fade-in"><div className="bg-white rounded-[4rem] p-10 max-w-3xl w-full shadow-2xl border-[12px] border-slate-100 overflow-y-auto max-h-[90vh] custom-scrollbar"><div className="flex items-center gap-6 mb-10 pb-8 border-b-4 border-slate-50"><div className="p-5 bg-indigo-600 text-white rounded-[2rem] shadow-xl"><SafeIcon name="ShieldCheck" size={48} /></div><h2 className="text-4xl font-black text-slate-800 tracking-tighter uppercase leading-none italic">Panel Papá</h2></div>
                                 <div className="flex gap-4 mb-10 bg-slate-100 p-3 rounded-[2.5rem] overflow-x-auto custom-scrollbar">{['balance', 'history', 'config'].map(tab => (<button key={tab} onClick={() => setAdminTab(tab)} className={`flex-1 py-4 px-6 font-black rounded-[2rem] text-lg transition-all min-w-[120px] ${adminTab===tab?'bg-white shadow-xl text-indigo-600':'text-slate-400'}`}>{tab==='balance'?'Saldo Real':tab==='history'?'Registros':'Ajustes'}</button>))}</div>
                                 {adminTab==='balance' && <div className="space-y-10 py-4"><div className="text-center"><label className="text-xs font-black uppercase text-slate-400 block mb-3 tracking-widest italic">Saldo Actual en CetesDirecto ($)</label><input type="number" value={adminRealBalance} onChange={e=>setAdminRealBalance(e.target.value)} className="w-full p-12 bg-slate-50 border-8 border-slate-100 rounded-[4rem] outline-none text-8xl font-black text-center focus:border-indigo-500" placeholder="0.00" /></div><button onClick={handleAdminSync} className="w-full py-10 font-black bg-indigo-600 text-white rounded-[3.5rem] text-4xl shadow-[0_15px_0_0_#1e1b4b] active:top-2 relative uppercase italic tracking-widest leading-none">Sincronizar Nube</button></div>}
                                 {adminTab==='history' && <div className="space-y-4 py-4 pr-4 custom-scrollbar">{(activeProfile.history || []).map(h => (<div key={h.id} className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border-4 border-slate-100"><div className="text-left font-black text-xl text-slate-700 tracking-tighter">{h.note || 'Ahorro'} <span className="text-xs text-slate-400 ml-2 italic tracking-widest">{h.date}</span></div><div className="flex items-center gap-6 font-black text-2xl text-green-500 tracking-tighter">${h.amount.toLocaleString()}<button onClick={()=>deleteRecord(h.id)} className="p-3 bg-white border-2 border-slate-200 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all"><SafeIcon name="Trash2" /></button></div></div>))}</div>}
-                                {adminTab==='config' && <div className="space-y-8 py-4"><div className="grid grid-cols-1 md:grid-cols-2 gap-8"><div className="bg-rose-50 p-8 rounded-[3rem] border-4 border-rose-100 text-center"><label className="font-black text-rose-600 block mb-4 uppercase text-xs tracking-widest italic">Helado $</label><input type="number" value={activeProfile.config?.iceCreamPrice} onChange={(e) => saveToCloud({...activeProfile, config:{...activeProfile.config, iceCreamPrice: parseFloat(e.target.value)}})} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-rose-200 text-5xl text-center outline-none" /></div><div className="bg-blue-50 p-8 rounded-[3rem] border-4 border-blue-100 text-center"><label className="font-black text-blue-600 block mb-4 uppercase text-xs tracking-widest italic">Cine $</label><input type="number" value={activeProfile.config?.moviePrice} onChange={(e) => saveToCloud({...activeProfile, config:{...activeProfile.config, moviePrice: parseFloat(e.target.value)}})} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-blue-200 text-5xl text-center outline-none" /></div></div></div>}
+                                {adminTab==='config' && <div className="space-y-8 py-4 text-center"><div className="grid grid-cols-1 md:grid-cols-2 gap-8"><div className="bg-rose-50 p-8 rounded-[3rem] border-4 border-rose-100"><label className="font-black text-rose-600 block mb-4 uppercase text-xs tracking-widest italic">Helado $</label><input type="number" value={activeProfile.config?.iceCreamPrice} onChange={(e) => saveToCloud({...activeProfile, config:{...activeProfile.config, iceCreamPrice: parseFloat(e.target.value)}})} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-rose-200 text-5xl text-center outline-none" /></div><div className="bg-blue-50 p-8 rounded-[3rem] border-4 border-blue-100"><label className="font-black text-blue-600 block mb-4 uppercase text-xs tracking-widest italic">Cine $</label><input type="number" value={activeProfile.config?.moviePrice} onChange={(e) => saveToCloud({...activeProfile, config:{...activeProfile.config, moviePrice: parseFloat(e.target.value)}})} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-blue-200 text-5xl text-center outline-none" /></div></div></div>}
                                 <button onClick={()=>setShowAdminModal(false)} className="w-full mt-12 py-8 font-black bg-slate-100 text-slate-400 rounded-[3rem] text-2xl uppercase italic tracking-widest">Cerrar</button>
                             </div></div>
                         )}
 
                         {showSettingsModal && (
-                            <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[70] fade-in"><div className="bg-white rounded-[4rem] p-10 max-w-lg w-full shadow-2xl border-[10px] border-slate-50 text-center uppercase tracking-tighter"><h2 className="text-4xl font-black mb-10 text-slate-800 leading-none italic">Tu Perfil</h2><div className="flex gap-4 justify-center flex-wrap mb-10">{Object.keys(colorThemes).map(c => (<button key={c} onClick={() => setNewTheme(c)} className={`w-12 h-12 rounded-full transition-all transform ${colorThemes[c].bg} ${newTheme === c ? 'ring-[8px] ring-slate-200 scale-125' : 'opacity-40'}`} />))}</div><div className="flex gap-2 justify-center flex-wrap bg-slate-50 p-6 rounded-[2.5rem] max-h-48 overflow-y-auto custom-scrollbar">{availableEmojis.map(e => (<span key={e} onClick={() => setNewEmoji(e)} className={`emoji-option ${newEmoji === e ? 'emoji-selected' : ''} flex items-center justify-center`}>{e}</span>))}</div><div className="flex gap-4 pt-8"><button onClick={()=>setShowSettingsModal(false)} className="flex-1 py-6 font-black bg-slate-100 text-slate-400">Cerrar</button><button onClick={async ()=>{await saveToCloud({...activeProfile, theme:newTheme, emoji:newEmoji}); setShowSettingsModal(false);}} className="flex-2 py-6 font-black bg-indigo-600 text-white rounded-[2rem] shadow-xl tracking-widest btn-3d shadow-[0_8px_0_0_#1e1b4b]">Guardar</button></div></div></div>
+                            <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[70] fade-in"><div className="bg-white rounded-[4rem] p-10 max-w-lg w-full shadow-2xl border-[10px] border-slate-50 text-center uppercase tracking-tighter"><h2 className="text-4xl font-black mb-10 text-slate-800 leading-none italic">Tu Perfil</h2><div className="flex gap-4 justify-center flex-wrap mb-10">{Object.keys(colorThemes).map(c => (<button key={c} onClick={() => setNewTheme(c)} className={`w-12 h-12 rounded-full transition-all transform ${colorThemes[c].bg} ${newTheme === c ? 'ring-[8px] ring-slate-200 scale-125' : 'opacity-40'}`} />))}</div><div className="flex gap-2 justify-center flex-wrap bg-slate-50 p-6 rounded-[2.5rem] max-h-48 overflow-y-auto custom-scrollbar">{availableEmojis.map(e => (<span key={e} onClick={() => setNewEmoji(e)} className={`emoji-option ${newEmoji === e ? 'emoji-selected' : ''} flex items-center justify-center`}>{e}</span>))}</div><div className="flex gap-4 pt-8"><button onClick={()=>setShowSettingsModal(false)} className="flex-1 py-6 font-black bg-slate-100 text-slate-400 uppercase tracking-widest">Cerrar</button><button onClick={async ()=>{await saveToCloud({...activeProfile, theme:newTheme, emoji:newEmoji}); setShowSettingsModal(false);}} className="flex-2 py-6 font-black bg-indigo-600 text-white rounded-[2rem] shadow-xl tracking-widest btn-3d shadow-[0_8px_0_0_#1e1b4b]">Guardar</button></div></div></div>
                         )}
 
                         {showGoalModal && (
-                            <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[100] fade-in"><div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl border-8 border-indigo-50 text-center uppercase tracking-tighter"><h2 className="text-5xl font-black mb-10 text-indigo-600 leading-none italic">Nuevo Sueño</h2><input type="text" value={newGoalName} onChange={e=>setNewGoalName(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none font-black text-3xl text-center mb-4" placeholder="¿Qué sueñas?" /><input type="number" value={newGoalTarget} onChange={e=>setNewGoalTarget(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none text-6xl font-black text-center" placeholder="$ Costo" /><div className="flex gap-4 mt-8"><button onClick={()=>setShowGoalModal(false)} className="flex-1 py-6 font-black text-slate-400">Cerrar</button><button onClick={handleSaveGoal} className={`flex-2 py-6 px-10 font-black ${theme.bg} text-white rounded-[2rem] text-2xl btn-3d ${theme.shadow}`}>Guardar</button></div></div></div>
+                            <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[100] fade-in"><div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl border-8 border-indigo-50 text-center uppercase tracking-tighter"><h2 className="text-5xl font-black mb-10 text-indigo-600 leading-none italic">Nuevo Sueño</h2><input type="text" value={newGoalName} onChange={e=>setNewGoalName(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none font-black text-3xl text-center mb-4" placeholder="¿Qué sueñas?" /><input type="number" value={newGoalTarget} onChange={e=>setNewGoalTarget(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none text-6xl font-black text-center" placeholder="$ Costo" /><div className="flex gap-4 mt-8"><button onClick={()=>setShowGoalModal(false)} className="flex-1 py-6 font-black text-slate-400 uppercase tracking-widest">Cerrar</button><button onClick={handleSaveGoal} className={`flex-2 py-6 px-10 font-black ${theme.bg} text-white rounded-[2rem] text-2xl btn-3d ${theme.shadow}`}>Guardar</button></div></div></div>
                         )}
                     </div>
                 );
