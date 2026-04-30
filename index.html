@@ -1,391 +1,785 @@
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetes Kids Familiar</title>
-    
-    <!-- CDNs: React, ReactDOM, Babel, Tailwind CSS, Lucide Icons y Firebase -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+import React, { useState, useMemo, useEffect } from 'react';
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, 
+  signInAnonymously, 
+  signInWithCustomToken, 
+  onAuthStateChanged 
+} from 'firebase/auth';
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  onSnapshot, 
+  collection, 
+  query 
+} from 'firebase/firestore';
+import { 
+  Coins, 
+  Zap, 
+  PlusCircle, 
+  ShieldCheck, 
+  Palette, 
+  Plus, 
+  Cloud, 
+  CloudRain, 
+  IceCream, 
+  Ticket, 
+  PieChart, 
+  Mountain, 
+  Award, 
+  Heart, 
+  Gift, 
+  Edit2, 
+  Trash2, 
+  Sparkles, 
+  Trophy, 
+  Star, 
+  Crown, 
+  Gem, 
+  Rocket, 
+  Flame, 
+  PartyPopper 
+} from 'lucide-react';
 
-        // Asignamos a window para que Babel pueda acceder
-        window.Firebase = { initializeApp, getAuth, signInAnonymously, onAuthStateChanged, getFirestore, doc, setDoc, onSnapshot, collection, updateDoc, deleteDoc };
-    </script>
+// --- Firebase Configuration ---
+// He integrado los valores específicos que proporcionaste para tu proyecto ceteskids
+const firebaseConfig = {
+  apiKey: "AIzaSyCgh9G37P75Z1L53JZzI2jjL4GBgcV74Pk",
+  authDomain: "ceteskids.firebaseapp.com",
+  projectId: "ceteskids",
+  storageBucket: "ceteskids.firebasestorage.app",
+  messagingSenderId: "819262734652",
+  appId: "1:819262734652:web:c385b1479ea83448975e39"
+};
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
-        body { font-family: 'Fredoka', sans-serif; background: #f8fafc; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'cetes-kids-v1';
 
-    <script type="text/babel">
-        const { useState, useMemo, useEffect } = React;
-        const { initializeApp, getAuth, signInAnonymously, onAuthStateChanged, getFirestore, doc, setDoc, onSnapshot, collection, updateDoc, deleteDoc } = window.Firebase;
+// --- Constants ---
+const colorThemes = {
+  rose: { bg: 'bg-rose-500', text: 'text-rose-500', light: 'bg-rose-50', border: 'border-rose-200', shadow: 'shadow-[0_8px_0_0_#e11d48]', gradient: 'from-pink-400 to-rose-600', chart: '#fb7185' },
+  sky: { bg: 'bg-sky-500', text: 'text-sky-600', light: 'bg-sky-50', border: 'border-sky-200', shadow: 'shadow-[0_8px_0_0_#0284c7]', gradient: 'from-sky-400 to-blue-600', chart: '#38bdf8' },
+  emerald: { bg: 'bg-emerald-500', text: 'text-emerald-600', light: 'bg-emerald-50', border: 'border-emerald-200', shadow: 'shadow-[0_8px_0_0_#059669]', gradient: 'from-emerald-400 to-teal-600', chart: '#34d399' },
+  violet: { bg: 'bg-purple-500', text: 'text-purple-600', light: 'bg-purple-50', border: 'border-purple-200', shadow: 'shadow-[0_8px_0_0_#7c3aed]', gradient: 'from-purple-400 to-indigo-600', chart: '#a78bfa' },
+  amber: { bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-50', border: 'border-amber-200', shadow: 'shadow-[0_8px_0_0_#d97706]', gradient: 'from-amber-400 to-orange-600', chart: '#fbbf24' }
+};
 
-        // --- Configuración Visual ---
-        const AVAILABLE_EMOJIS = ['👧', '👦', '🦄', '🚀', '🎨', '🍦', '🎮', '⚽', '🐱', '🐶', '🐯', '🐼', '🦊', '🐨', '🦁', '🦖', '🧚', '🧞', '⭐', '🌈', '🍭', '🍕', '🎸', '🛹', '👾'];
-        const COLOR_THEMES = {
-            rose: { bg: 'bg-rose-500', text: 'text-rose-600', light: 'bg-rose-50', border: 'border-rose-200', gradient: 'from-pink-400 to-rose-600', chart: '#fb7185' },
-            sky: { bg: 'bg-sky-500', text: 'text-sky-600', light: 'bg-sky-50', border: 'border-sky-200', gradient: 'from-sky-400 to-blue-600', chart: '#38bdf8' },
-            emerald: { bg: 'bg-emerald-500', text: 'text-emerald-600', light: 'bg-emerald-50', border: 'border-emerald-200', gradient: 'from-emerald-400 to-teal-600', chart: '#34d399' },
-            violet: { bg: 'bg-purple-500', text: 'text-purple-600', light: 'bg-purple-50', border: 'border-purple-200', gradient: 'from-purple-400 to-indigo-600', chart: '#a78bfa' },
-            amber: { bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-50', border: 'border-amber-200', gradient: 'from-amber-400 to-orange-600', chart: '#fbbf24' }
-        };
-        const ACHIEVEMENT_COLORS = ['from-yellow-400 to-orange-600', 'from-emerald-400 to-teal-600', 'from-purple-400 to-fuchsia-600', 'from-sky-400 to-indigo-600'];
+const availableEmojis = ['👧', '👦', '😎', '🤩', '🤠', '👻', '🤖', '👽', '🎨', '🍦', '🎮', '🦄', '🐱', '🐶', '🐰', '🦊', '🦋', '🦖', '🐢', '🐳', '🌸', '🌻', '🍭', '🍩', '🧁', '⭐', '🚀', '🛸', '🌈', '⚽', '🛹', '🎸', '🧩'];
 
-        // Helper para iconos de Lucide en React Standalone
-        const Icon = ({ name, size = 24, className = "" }) => {
-            const iconRef = React.useRef(null);
-            useEffect(() => {
-                if (iconRef.current) {
-                    lucide.createIcons({
-                        attrs: { size, class: className },
-                        nameAttr: 'data-lucide',
-                        icons: { [name]: lucide.icons[name] }
-                    });
-                }
-            }, [name, size, className]);
-            return <i data-lucide={name} ref={iconRef} className={className}></i>;
-        };
+const achievementIcons = { Trophy, Star, Crown, Gem, Rocket, Heart, Zap, Sparkles, Flame, Award, Coins };
 
-        const PieChartSources = ({ data }) => {
-            if (!data || data.length === 0) return <div className="text-center py-8 text-slate-400 font-bold italic">¡Aún no hay ahorros registrados!</div>;
-            const total = data.reduce((sum, item) => sum + (item.value || 0), 0);
-            let cumulativePercent = 0;
-            const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
-            return (
-                <div className="flex flex-col md:flex-row items-center justify-center gap-12">
-                    <div className="relative w-48 h-48 drop-shadow-xl flex-shrink-0">
-                        <svg viewBox="0 0 32 32" className="w-full h-full transform -rotate-90">
-                            {data.map((item, i) => {
-                                const percent = (item.value / total) * 100;
-                                const strokeDasharray = `${percent} ${100 - percent}`;
-                                const strokeDashoffset = -cumulativePercent;
-                                cumulativePercent += percent;
-                                return <circle key={i} cx="16" cy="16" r="16" fill="transparent" stroke={colors[i % colors.length]} strokeWidth="32" strokeDasharray={strokeDasharray} strokeDashoffset={strokeDashoffset} />;
-                            })}
-                            <circle cx="16" cy="16" r="11" fill="white" />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center flex-col text-center uppercase">
-                            <span className="text-[10px] font-black text-slate-400 leading-none">Total</span>
-                            <span className="text-xl font-black text-slate-800">${total.toLocaleString()}</span>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 gap-2 w-full">
-                        {data.map((item, i) => (
-                            <div key={i} className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors[i % colors.length] }}></div>
-                                    <span className="font-bold text-slate-700 text-xs">{item.label}</span>
-                                </div>
-                                <span className="font-black text-slate-800 text-xs">${item.value.toLocaleString()}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            );
-        };
+// --- Charts Components ---
+const PieChartSources = ({ data }) => {
+  if (!data || data.length === 0) return <div className="text-center py-8 text-slate-400 italic font-bold">¡Aún no hay tesoros guardados!</div>;
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  let cumulativePercent = 0;
+  const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#8AC926'];
+  
+  return (
+    <div className="flex flex-col md:flex-row items-center justify-center gap-12">
+      <div className="relative w-64 h-64 drop-shadow-xl flex-shrink-0">
+        <svg viewBox="0 0 32 32" className="w-full h-full transform -rotate-90">
+          {data.map((item, i) => {
+            const percent = (item.value / total) * 100;
+            const strokeDasharray = `${percent} ${100 - percent}`;
+            const strokeDashoffset = -cumulativePercent;
+            cumulativePercent += percent;
+            return <circle key={i} cx="16" cy="16" r="16" fill="transparent" stroke={colors[i % colors.length]} strokeWidth="32" strokeDasharray={strokeDasharray} strokeDashoffset={strokeDashoffset} className="transition-all duration-700" />;
+          })}
+          <circle cx="16" cy="16" r="10" fill="white" />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center flex-col text-center">
+          <span className="text-xs font-black text-slate-400 uppercase leading-none">Total</span>
+          <span className="text-2xl font-black text-slate-800 tracking-tighter">${total.toLocaleString()}</span>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+        {data.map((item, i) => (
+          <div key={i} className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: colors[i % colors.length] }}></div>
+              <span className="font-bold text-slate-700 text-sm truncate max-w-[120px]">{item.label}</span>
+            </div>
+            <div className="font-black text-slate-800 text-lg">${item.value.toLocaleString()}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-        const GrowthLineChart = ({ data, color }) => {
-            if (!data || data.length < 2) return (
-                <div className="h-full flex flex-col items-center justify-center text-slate-400 font-bold italic p-8 text-center bg-white rounded-3xl border-4 border-dashed border-slate-50">
-                    <Icon name="mountain" size={48} className="mb-4 opacity-20" />
-                    <p>Sincroniza el saldo real en el Panel Papá para ver tu montaña.</p>
-                </div>
-            );
-            const width = 800; const height = 250; const padding = 60;
-            const maxVal = Math.max(...data.map(d => d.balance || 0)) * 1.2;
-            const points = data.map((d, i) => ({
-                x: padding + (i * (width - 2 * padding)) / (data.length - 1),
-                y: height - padding - ((d.balance || 0) * (height - 2 * padding)) / (maxVal || 1)
-            }));
-            const pathData = `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ');
-            return (
-                <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible drop-shadow-xl">
-                    <path d={pathData} fill="none" stroke={color} strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
-                    {points.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={10} fill="white" stroke={color} strokeWidth="6" />)}
-                </svg>
-            );
-        };
+const GrowthLineChart = ({ data, color }) => {
+  if (!data || data.length < 2) return (
+    <div className="h-full flex flex-col items-center justify-center text-slate-400 font-bold italic p-8 text-center bg-white rounded-[2rem] border-4 border-dashed border-slate-100">
+      <CloudRain size={80} className="mb-4 opacity-20" />
+      <p className="text-2xl">¡Agrega tu primer ahorro para dibujar la montaña!</p>
+    </div>
+  );
 
-        function App() {
-            const [user, setUser] = useState(null);
-            const [profiles, setProfiles] = useState([]);
-            const [activeProfileId, setActiveProfileId] = useState(null);
-            const [loading, setLoading] = useState(true);
-            const [showAddModal, setShowAddModal] = useState(false);
-            const [showAdminModal, setShowAdminModal] = useState(false);
-            const [showSettingsModal, setShowSettingsModal] = useState(false);
-            const [showGoalModal, setShowGoalModal] = useState(false);
-            const [adminTab, setAdminTab] = useState('balance');
-            const [newAmount, setNewAmount] = useState('');
-            const [newNote, setNewNote] = useState('');
-            const [adminRealBalance, setAdminRealBalance] = useState('');
-            const [newTheme, setNewTheme] = useState('rose');
-            const [newEmoji, setNewEmoji] = useState('👧');
-            const [newGoalName, setNewGoalName] = useState('');
-            const [newGoalTarget, setNewGoalTarget] = useState('');
-            const [newAchName, setNewAchName] = useState('');
-            const [newAchTarget, setNewAchTarget] = useState('');
-            const [newAchType, setNewAchType] = useState('ahorro');
+  const width = 800, height = 300, padding = 60;
+  const maxVal = Math.max(...data.map(d => d.balance)) * 1.2;
+  const minVal = 0;
+  
+  const points = data.map((d, i) => {
+    const x = padding + (i * (width - 2 * padding)) / (data.length - 1);
+    const y = height - padding - ((d.balance - minVal) * (height - 2 * padding)) / (maxVal - minVal);
+    return { x, y, balance: d.balance };
+  });
 
-            // --- CONFIGURACIÓN FIREBASE ---
-            // IMPORTANTE: Sustituye esto por tu configuración real si no usas variables de entorno
-            const fbConfig = window.__firebase_config ? JSON.parse(window.__firebase_config) : {
-                apiKey: "", authDomain: "", projectId: "", storageBucket: "", messagingSenderId: "", appId: ""
-            };
-            const currentAppId = window.__app_id || 'cetes-kids-v3-final';
+  const pathData = `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ');
 
-            useEffect(() => {
-                const app = initializeApp(fbConfig);
-                const auth = getAuth(app);
-                const initAuth = async () => { await signInAnonymously(auth); };
-                initAuth();
-                return onAuthStateChanged(auth, setUser);
-            }, []);
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible drop-shadow-2xl">
+      <defs>
+        <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor={color} />
+          <stop offset="100%" stopColor="#10b981" />
+        </linearGradient>
+      </defs>
+      <rect x={padding} y={height-padding} width={width-padding*2} height="8" rx="4" fill="#f1f5f9" />
+      <path d={pathData} fill="none" stroke="url(#lineGrad)" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
+      {points.map((p, i) => (
+        <g key={i}>
+          <circle cx={p.x} cy={p.y} r="12" fill="white" stroke={i === points.length - 1 ? "#10b981" : color} strokeWidth="6" />
+          <g transform={`translate(${p.x}, ${p.y - 45})`}>
+            <rect x="-35" y="-12" width="70" height="24" rx="12" fill="white" stroke="#e2e8f0" strokeWidth="2" />
+            <text textAnchor="middle" y="5" fontSize="12" fontWeight="900" fill="#1e293b">${p.balance.toLocaleString()}</text>
+          </g>
+        </g>
+      ))}
+    </svg>
+  );
+};
 
-            useEffect(() => {
-                if (!user) return;
-                const db = getFirestore();
-                const profilesRef = collection(db, 'artifacts', currentAppId, 'public', 'data', 'profiles');
-                return onSnapshot(profilesRef, (snapshot) => {
-                    const loaded = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
-                    if (loaded.length === 0) {
-                        const initial = [
-                            { id: 'majo', name: 'Majo', theme: 'rose', emoji: '🎨', realBalance: 0, totalContributed: 0, history: [], snapshots: [], goals: [], achievements: [{id:'1', label:'Primer Ahorro', target:500, type:'ahorro', color:'from-yellow-400 to-orange-600'}], config: { iceCreamPrice: 45, moviePrice: 120 } },
-                            { id: 'ivanna', name: 'Ivanna', theme: 'sky', emoji: '🦄', realBalance: 0, totalContributed: 0, history: [], snapshots: [], goals: [], achievements: [{id:'1', label:'Primer Ahorro', target:500, type:'ahorro', color:'from-yellow-400 to-orange-600'}], config: { iceCreamPrice: 45, moviePrice: 120 } }
-                        ];
-                        initial.forEach(p => setDoc(doc(db, 'artifacts', currentAppId, 'public', 'data', 'profiles', p.id), p));
-                    } else {
-                        setProfiles(loaded);
-                        setActiveProfileId(prev => prev || loaded[0].id);
-                    }
-                    setLoading(false);
-                });
-            }, [user]);
+// --- Main Application Component ---
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [profiles, setProfiles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeProfileId, setActiveProfileId] = useState(null);
 
-            const activeProfile = profiles.find(p => p.id === activeProfileId) || profiles[0] || {};
-            const theme = COLOR_THEMES[activeProfile.theme] || COLOR_THEMES.rose;
-            const currentBalance = activeProfile.realBalance || 0;
-            const contributed = activeProfile.totalContributed || 0;
-            const gain = Math.max(0, currentBalance - contributed);
-            const iceCreamCount = Math.floor(gain / (activeProfile.config?.iceCreamPrice || 45));
-            const movieCount = Math.floor(gain / (activeProfile.config?.moviePrice || 120));
+  // Modals
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showGoalModal, setShowGoalModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [adminTab, setAdminTab] = useState('balance');
 
-            const sourceData = useMemo(() => {
-                if (!activeProfile.history) return [];
-                const groups = activeProfile.history.reduce((acc, h) => {
-                    const label = h.note || 'Otros';
-                    acc[label] = (acc[label] || 0) + (h.amount || 0);
-                    return acc;
-                }, {});
-                return Object.entries(groups).map(([label, value]) => ({ label, value }));
-            }, [activeProfile.history]);
+  // Inputs
+  const [newAmount, setNewAmount] = useState('');
+  const [newNote, setNewNote] = useState('');
+  const [newGoalName, setNewGoalName] = useState('');
+  const [newGoalTarget, setNewGoalTarget] = useState('');
+  const [editingGoalId, setEditingGoalId] = useState(null);
+  const [newAchName, setNewAchName] = useState('');
+  const [newAchTarget, setNewAchTarget] = useState('');
+  const [newAchType, setNewAchType] = useState('ahorro');
+  const [newAchIcon, setNewAchIcon] = useState('Trophy');
+  const [newName, setNewName] = useState('');
+  const [newTheme, setNewTheme] = useState('rose');
+  const [newEmoji, setNewEmoji] = useState('👧');
+  const [adminRealBalance, setAdminRealBalance] = useState('');
 
-            const combinedRecords = useMemo(() => {
-                if (!activeProfile.id) return [];
-                const hists = (activeProfile.history || []).map(h => ({ ...h, type: 'Ahorro', color: 'text-emerald-500', bg: 'bg-emerald-100', iconName: 'coins' }));
-                const snaps = (activeProfile.snapshots || []).map(s => ({ ...s, amount: s.balance, note: 'Sincronización Real', type: 'Ajuste', color: 'text-indigo-500', bg: 'bg-indigo-100', iconName: 'shield-check' }));
-                return [...hists, ...snaps].sort((a, b) => (b.time || 0) - (a.time || 0));
-            }, [activeProfile.history, activeProfile.snapshots]);
-
-            const recalculateAndSave = async (p) => {
-                const db = getFirestore();
-                const events = [...(p.history || []).map(h => ({...h, type:'c', t: h.time})), ...(p.snapshots || []).map(s => ({...s, type:'s', t: s.time}))].sort((a,b) => a.t - b.t);
-                let bal = 0, totalC = 0;
-                events.forEach(ev => { if(ev.type === 'c') { totalC += ev.amount; bal += ev.amount; } else { bal = ev.balance; } });
-                await setDoc(doc(db, 'artifacts', currentAppId, 'public', 'data', 'profiles', p.id), { ...p, realBalance: bal, totalContributed: totalC });
-            };
-
-            const handleAddSaving = async () => {
-                const amt = parseFloat(newAmount); if (isNaN(amt) || amt <= 0) return;
-                const updated = { ...activeProfile, history: [...(activeProfile.history || []), { id: Date.now().toString(), time: Date.now(), date: new Date().toLocaleDateString(), amount: amt, note: newNote || 'Ahorro' }] };
-                await recalculateAndSave(updated); setNewAmount(''); setNewNote(''); setShowAddModal(false);
-            };
-
-            const handleAdminSync = async () => {
-                const val = parseFloat(adminRealBalance); if (isNaN(val)) return;
-                const updated = { ...activeProfile, snapshots: [...(activeProfile.snapshots || []), { id: Date.now().toString(), time: Date.now(), date: new Date().toLocaleDateString(), balance: val }] };
-                await recalculateAndSave(updated); setAdminRealBalance(''); setShowAdminModal(false);
-            };
-
-            if (loading) return <div className="h-screen flex items-center justify-center font-black text-indigo-600 text-2xl animate-pulse uppercase">Cargando Cetes Kids...</div>;
-
-            return (
-                <div className={`min-h-screen ${theme.light} pb-20`}>
-                    <nav className="fixed top-0 inset-x-0 bg-white/80 backdrop-blur-md z-50 p-4 border-b border-slate-200">
-                        <div className="max-w-6xl mx-auto flex justify-between items-center">
-                            <div className="flex gap-2">
-                                {profiles.map(p => (
-                                    <button key={p.id} onClick={() => setActiveProfileId(p.id)} className={`px-5 py-2.5 rounded-2xl font-black text-sm transition-all ${activeProfileId === p.id ? `${COLOR_THEMES[p.theme].bg} text-white shadow-lg` : 'bg-slate-100 text-slate-400'}`}>
-                                        {p.emoji} {p.name}
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="flex gap-2">
-                                <button onClick={() => { setNewTheme(activeProfile.theme); setNewEmoji(activeProfile.emoji); setShowSettingsModal(true); }} className={`p-2.5 rounded-xl text-white shadow-md ${theme.bg}`}><Icon name="palette" size={20}/></button>
-                                <button onClick={() => { setAdminRealBalance(currentBalance); setShowAdminModal(true); }} className="p-2.5 bg-slate-900 text-white rounded-xl shadow-md"><Icon name="shield-check" size={20}/></button>
-                            </div>
-                        </div>
-                    </nav>
-
-                    <main className="max-w-5xl mx-auto pt-24 px-4 space-y-8">
-                        <header className={`bg-gradient-to-br ${theme.gradient} rounded-[3rem] p-10 md:p-16 text-white shadow-2xl relative overflow-hidden`}>
-                            <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-10">
-                                <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-                                    <div className="bg-white/20 p-8 rounded-[2.5rem] text-8xl shadow-2xl backdrop-blur-sm border border-white/30">{activeProfile.emoji}</div>
-                                    <div>
-                                        <h1 className="text-5xl md:text-7xl font-black mb-2 tracking-tighter leading-none italic">¡Hola, {activeProfile.name}!</h1>
-                                        <p className="text-white/80 text-xl font-bold uppercase tracking-[0.2em]">Tu tesoro crece cada día</p>
-                                    </div>
-                                </div>
-                                <button onClick={() => setShowAddModal(true)} className="group bg-white text-slate-900 px-10 py-6 rounded-3xl font-black text-2xl shadow-xl flex items-center gap-4 uppercase tracking-tighter">
-                                    <Icon name="plus-circle" size={36} className={theme.text} /> ¡Sumar!
-                                </button>
-                            </div>
-                        </header>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="bg-white rounded-[2.5rem] p-10 text-center shadow-xl border-4 border-slate-50">
-                                <span className="text-slate-400 font-black uppercase text-xs tracking-widest block mb-4 italic">Saldo en CetesDirecto</span>
-                                <div className="text-7xl font-black text-slate-800 tracking-tighter leading-none mb-4">${currentBalance.toLocaleString()}</div>
-                                <div className="bg-slate-50 px-5 py-2 rounded-full font-bold text-slate-400 text-sm italic">Base: ${contributed.toLocaleString()}</div>
-                            </div>
-                            <div className="bg-emerald-500 rounded-[2.5rem] p-10 text-center text-white shadow-xl shadow-emerald-100">
-                                <span className="opacity-70 font-black uppercase text-xs tracking-widest block mb-4 italic">Ganancia Mágica ✨</span>
-                                <div className="text-7xl font-black tracking-tighter leading-none mb-4 animate-pulse">+${gain.toLocaleString()}</div>
-                                <div className="bg-white/20 backdrop-blur-md px-6 py-2 rounded-full w-fit mx-auto font-black italic">¡Tu dinero trabaja para ti!</div>
-                            </div>
-                        </div>
-
-                        <section className="bg-indigo-900 rounded-[3rem] p-10 text-white shadow-2xl">
-                            <div className="flex items-center gap-4 mb-10">
-                                <Icon name="party-popper" size={32} className="text-indigo-400" />
-                                <h2 className="text-3xl font-black italic uppercase tracking-tighter">¡Premios Ganados!</h2>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className={`p-8 rounded-[2rem] flex items-center gap-8 border-2 ${iceCreamCount > 0 ? 'bg-white/10 border-rose-400' : 'bg-white/5 opacity-40'}`}>
-                                    <div className="bg-rose-500 p-6 rounded-2xl shadow-lg"><Icon name="ice-cream" size={48} /></div>
-                                    <div className="text-left">
-                                        <div className="text-6xl font-black leading-none">{iceCreamCount}</div>
-                                        <div className="text-sm font-black uppercase tracking-widest opacity-60">Helados Ganados</div>
-                                    </div>
-                                </div>
-                                <div className={`p-8 rounded-[2rem] flex items-center gap-8 border-2 ${movieCount > 0 ? 'bg-white/10 border-sky-400' : 'bg-white/5 opacity-40'}`}>
-                                    <div className="bg-sky-500 p-6 rounded-2xl shadow-lg"><Icon name="ticket" size={48} /></div>
-                                    <div className="text-left">
-                                        <div className="text-6xl font-black leading-none">{movieCount}</div>
-                                        <div className="text-sm font-black uppercase tracking-widest opacity-60">Boletos de Cine</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div className="bg-white rounded-[2.5rem] p-10 shadow-xl border border-slate-50">
-                                <h3 className="text-2xl font-black uppercase italic text-slate-800 mb-8 flex items-center gap-3"><Icon name="pie-chart" className="text-amber-500" /> ¿De dónde viene?</h3>
-                                <PieChartSources data={sourceData} />
-                            </div>
-                            <div className="bg-white rounded-[2.5rem] p-10 shadow-xl border border-slate-50">
-                                <h3 className="text-2xl font-black uppercase italic text-slate-800 mb-8 flex items-center gap-3"><Icon name="mountain" className={theme.text} /> Tu Montaña</h3>
-                                <div className="h-[250px]"><GrowthLineChart data={activeProfile.snapshots || []} color={theme.chart} /></div>
-                            </div>
-                        </div>
-
-                        <section className="bg-white rounded-[3rem] p-10 shadow-xl border-t-8 border-amber-400">
-                            <div className="flex items-center gap-4 mb-10"><Icon name="award" className="text-amber-500" size={48} /><h2 className="text-4xl font-black italic uppercase tracking-tighter text-slate-800">Mis Medallas</h2></div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {(activeProfile.achievements || []).map((medal) => {
-                                    const val = medal.type === 'ahorro' ? contributed : gain; const unlocked = val >= medal.target; const prog = Math.min(100, (val / medal.target) * 100);
-                                    return (
-                                        <div key={medal.id} className={`relative p-6 rounded-[2rem] border-4 flex items-center gap-6 transition-all ${unlocked ? 'bg-yellow-50 border-yellow-200 shadow-lg' : 'bg-slate-50 border-slate-100 opacity-60'}`}>
-                                            <div className={`p-6 rounded-2xl flex-shrink-0 ${unlocked ? `bg-gradient-to-br ${medal.color} text-white shadow-xl rotate-3` : 'bg-slate-200 text-slate-400'}`}><Icon name="piggy-bank" size={40} /></div>
-                                            <div className="flex-1">
-                                                <h4 className={`text-xl font-black uppercase tracking-tight ${unlocked ? 'text-slate-800' : 'text-slate-400'}`}>{medal.label}</h4>
-                                                <div className="w-full bg-slate-200 h-3 rounded-full mt-3 overflow-hidden"><div className={`h-full ${unlocked ? 'bg-yellow-400' : 'bg-slate-400'} transition-all duration-1000`} style={{ width: `${prog}%` }}></div></div>
-                                                <p className={`text-xs font-bold mt-2 uppercase tracking-widest ${unlocked ? 'text-yellow-600' : 'text-slate-400'}`}>{unlocked ? '¡LO LOGRASTE! 🏆' : `Meta: $${medal.target.toLocaleString()}`}</p>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </section>
-
-                        <section className="space-y-8">
-                            <div className="flex items-center justify-between px-2"><h2 className="text-4xl font-black italic uppercase tracking-tighter text-slate-800 flex items-center gap-4"><Icon name="heart" className="text-red-500" /> Mis Sueños</h2><button onClick={() => setShowGoalModal(true)} className="p-3 bg-white text-indigo-600 rounded-full shadow-md border border-indigo-50"><Icon name="plus-circle" size={28}/></button></div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                {(activeProfile.goals || []).map(g => {
-                                    const prog = Math.min(100, (currentBalance / g.target) * 100);
-                                    return (
-                                        <div key={g.id} className={`bg-white p-8 rounded-[2.5rem] border-4 shadow-xl relative group ${prog >= 100 ? 'border-emerald-400 bg-emerald-50' : 'border-white'}`}>
-                                            <button onClick={async () => { const db = getFirestore(); const upd = { ...activeProfile, goals: activeProfile.goals.filter(goal => goal.id !== g.id) }; await setDoc(doc(db, 'artifacts', currentAppId, 'public', 'data', 'profiles', activeProfileId), upd); }} className="absolute top-4 right-4 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><Icon name="x" size={20}/></button>
-                                            <div className="flex items-center gap-4 mb-6"><div className={`p-4 rounded-2xl ${prog >= 100 ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400'}`}><Icon name="gift" size={28}/></div><h3 className="font-black text-2xl text-slate-800 italic">{g.name}</h3></div>
-                                            <div className="w-full bg-slate-100 h-8 rounded-full overflow-hidden border-2 border-slate-50"><div className={`h-full transition-all duration-1000 ${prog >= 100 ? 'bg-emerald-500' : theme.bg}`} style={{ width: `${prog}%` }}></div></div>
-                                            <div className="flex justify-between mt-4 font-black text-sm uppercase italic tracking-widest text-slate-400"><span>${currentBalance.toLocaleString()}</span><span className={theme.text}>Meta: ${g.target.toLocaleString()}</span></div>
-                                            {prog >= 100 && <div className="mt-4 text-center text-emerald-600 font-black animate-bounce uppercase">¡Sueño Cumplido! 🚀</div>}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </section>
-                    </main>
-
-                    {/* --- MODALES (Implementados con Tailwind) --- */}
-                    {showAddModal && (
-                        <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
-                            <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-b-[12px] border-indigo-100">
-                                <div className="text-center mb-8"><Icon name="piggy-bank" size={64} className="mx-auto text-indigo-500 mb-4" /><h2 className="text-4xl font-black italic text-slate-800 uppercase">Sumar al Tesoro</h2></div>
-                                <div className="space-y-6">
-                                    <input type="number" value={newAmount} onChange={e => setNewAmount(e.target.value)} className="w-full p-6 bg-slate-50 border-4 border-slate-100 rounded-3xl outline-none text-5xl font-black text-center focus:border-indigo-500" placeholder="0" autoFocus />
-                                    <input type="text" value={newNote} onChange={e => setNewNote(e.target.value)} className="w-full p-5 bg-slate-50 border-4 border-slate-100 rounded-2xl outline-none font-bold text-center" placeholder="¿Por qué lo ahorraste?" />
-                                    <div className="flex gap-4"><button onClick={() => setShowAddModal(false)} className="flex-1 font-black text-slate-400 uppercase tracking-widest text-xs">CANCELAR</button><button onClick={handleAddSaving} className={`flex-[2] py-5 font-black text-white rounded-full text-xl shadow-xl ${theme.bg}`}>¡LISTO!</button></div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {showAdminModal && (
-                        <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-2xl z-[100] flex items-center justify-center p-4">
-                            <div className="bg-white rounded-[3rem] p-10 max-w-4xl w-full shadow-2xl border-4 border-slate-200 h-[80vh] flex flex-col">
-                                <div className="flex justify-between items-center mb-8 pb-6 border-b border-slate-100"><h2 className="text-3xl font-black italic uppercase tracking-tighter text-slate-800">Panel Papá</h2><button onClick={() => setShowAdminModal(false)} className="text-slate-400 hover:text-slate-900"><Icon name="x" size={32}/></button></div>
-                                <div className="flex gap-2 mb-8 bg-slate-100 p-2 rounded-2xl overflow-x-auto no-scrollbar">{[{id: 'balance', label: 'Sincronizar'}, {id: 'history', label: 'Registros'}, {id: 'achievements', label: 'Medallas'}, {id: 'config', label: 'Precios'}].map(tab => (<button key={tab.id} onClick={() => setAdminTab(tab.id)} className={`flex-1 py-4 px-6 font-black rounded-xl text-xs uppercase tracking-widest transition-all whitespace-nowrap ${adminTab === tab.id ? 'bg-white shadow-md text-indigo-600' : 'text-slate-400'}`}>{tab.label}</button>))}</div>
-                                <div className="flex-1 overflow-y-auto pr-4 no-scrollbar">
-                                    {adminTab === 'balance' && (<div className="space-y-8 py-4"><div className="bg-indigo-50 p-10 rounded-[2.5rem] border-2 border-indigo-100 text-center"><label className="text-[10px] font-black uppercase text-indigo-400 block mb-6 tracking-widest">Saldo Real en CetesDirecto ($)</label><input type="number" value={adminRealBalance} onChange={e => setAdminRealBalance(e.target.value)} className="w-full p-8 bg-white border-4 border-indigo-200 rounded-[2rem] outline-none text-7xl font-black text-center focus:border-indigo-500" placeholder="0.00" /></div><button onClick={handleAdminSync} className="w-full py-8 bg-indigo-600 text-white rounded-[2rem] text-2xl font-black shadow-xl uppercase tracking-widest">ACTUALIZAR NUBE FAMILIAR</button></div>)}
-                                    {adminTab === 'history' && (<div className="space-y-4 py-4">{combinedRecords.map(r => (<div key={r.id} className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-white hover:shadow-md transition-all group"><div className="flex items-center gap-4 text-left"><div className={`p-3 rounded-xl ${r.bg} ${r.color}`}><Icon name={r.iconName} size={24} /></div><div><p className="font-black text-lg text-slate-800 leading-none">{r.note}</p><p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-widest">{r.date} • {r.type}</p></div></div><div className="flex items-center gap-6"><span className={`font-black text-xl ${r.color}`}>${r.amount.toLocaleString()}</span><button onClick={async () => { const db = getFirestore(); let h = activeProfile.history || []; let s = activeProfile.snapshots || []; if(r.type === 'Ahorro') h = h.filter(x => x.id !== r.id); else s = s.filter(x => x.id !== r.id); await recalculateAndSave({ ...activeProfile, history: h, snapshots: s }); }} className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><Icon name="trash-2" size={20}/></button></div></div>))}</div>)}
-                                    {adminTab === 'achievements' && (<div className="space-y-6 py-4"><div className="bg-slate-50 p-6 rounded-3xl border-2 border-slate-100"><h4 className="font-black text-slate-800 mb-6 uppercase text-sm italic text-center">Nueva Medalla</h4><div className="grid grid-cols-2 gap-4 mb-4"><input type="text" placeholder="Nombre" value={newAchName} onChange={e => setNewAchName(e.target.value)} className="p-4 rounded-xl border-2 border-slate-200 outline-none font-bold" /><input type="number" placeholder="Meta ($)" value={newAchTarget} onChange={e => setNewAchTarget(e.target.value)} className="p-4 rounded-xl border-2 border-slate-200 outline-none font-bold" /></div><div className="flex gap-4"><select value={newAchType} onChange={e => setNewAchType(e.target.value)} className="flex-1 p-4 rounded-xl border-2 border-slate-200 outline-none font-bold text-slate-500"><option value="ahorro">Ahorro Propio</option><option value="ganancia">Ganancia Mágica</option></select><button onClick={handleAddAchievement} className="px-8 py-4 bg-indigo-600 text-white font-black rounded-xl hover:bg-indigo-700">Crear</button></div></div></div>)}
-                                    {adminTab === 'config' && (<div className="space-y-6 py-4"><div className="bg-rose-50 p-8 rounded-[2rem] border-2 border-rose-100 flex items-center justify-between"><div className="flex items-center gap-4"><Icon name="ice-cream" size={40} className="text-rose-500"/><span className="font-black text-rose-800 uppercase italic">Precio Helado ($)</span></div><input type="number" defaultValue={activeProfile.config?.iceCreamPrice} onBlur={(e) => { const db = getFirestore(); updateDoc(doc(db, 'artifacts', currentAppId, 'public', 'data', 'profiles', activeProfileId), { 'config.iceCreamPrice': parseFloat(e.target.value) }) }} className="w-32 p-4 rounded-2xl border-2 border-rose-200 text-center font-black text-3xl" /></div></div>)}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {showSettingsModal && (
-                        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
-                            <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-4 border-slate-50 text-center">
-                                <h2 className="text-3xl font-black mb-10 text-slate-800 italic uppercase tracking-tighter">Mi Estilo</h2>
-                                <div className="mb-10"><label className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-6 block">Color de mi Nube</label><div className="flex gap-4 justify-center flex-wrap">{Object.keys(COLOR_THEMES).map(c => (<button key={c} onClick={() => setNewTheme(c)} className={`w-12 h-12 rounded-full transition-all transform hover:scale-110 ${COLOR_THEMES[c].bg} ${newTheme === c ? 'ring-[6px] ring-slate-100 scale-125 shadow-xl' : 'opacity-40'}`}/>))}</div></div>
-                                <div className="flex gap-4 pt-6"><button onClick={() => setShowSettingsModal(false)} className="flex-1 font-black text-slate-400 uppercase tracking-widest text-xs">CERRAR</button><button onClick={async () => { const db = getFirestore(); await updateDoc(doc(db, 'artifacts', currentAppId, 'public', 'data', 'profiles', activeProfile.id), { theme: newTheme, emoji: newEmoji }); setShowSettingsModal(false); }} className={`flex-[2] py-5 font-black bg-indigo-600 text-white rounded-full text-xl shadow-xl hover:bg-indigo-700 transition-all uppercase tracking-widest`}>GUARDAR</button></div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
+  // 1. Authentication
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          try {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } catch (err) {
+            console.warn("Error con el token de Canvas (esperado al usar una config propia de Firebase). Iniciando sesión anónima...", err);
+            await signInAnonymously(auth);
+          }
+        } else {
+          await signInAnonymously(auth);
         }
+      } catch (e) {
+        console.error("Auth error:", e);
+      }
+    };
+    initAuth();
+    return onAuthStateChanged(auth, setUser);
+  }, []);
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+  // 2. Data Fetching
+  useEffect(() => {
+    if (!user) return;
+    // IMPORTANTE: Se utiliza la estructura de rutas requerida /artifacts/{appId}/public/data/{collection}
+    const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'profiles'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const loaded = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
+      if (loaded.length === 0) {
+        // Carga de perfiles por defecto si la base de datos está vacía
+        const seedProfiles = [
+          { 
+            id: 'majo', 
+            name: 'Majo', 
+            theme: 'rose', 
+            emoji: '🎨', 
+            realBalance: 0, 
+            totalContributed: 0, 
+            history: [], 
+            snapshots: [], 
+            goals: [], 
+            achievements: [
+              { id: 'd1', label: 'Primer Ahorro', target: 500, type: 'ahorro', icon: 'Coins', color: 'from-yellow-400 to-orange-600' }
+            ], 
+            config: { iceCreamPrice: 45, moviePrice: 120 } 
+          }
+        ];
+        seedProfiles.forEach(p => setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', p.id), p));
+      } else {
+        setProfiles(loaded);
+        setActiveProfileId(prev => prev || loaded[0].id);
+      }
+      setLoading(false);
+    }, (error) => {
+      console.error("Error al obtener datos de Firestore:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  const activeProfile = useMemo(() => 
+    profiles.find(p => p.id === activeProfileId) || profiles[0] || {}, 
+  [profiles, activeProfileId]);
+
+  const theme = colorThemes[activeProfile.theme] || colorThemes.rose;
+
+  // --- Logic Functions ---
+  const saveToCloud = async (data) => {
+    if (!user || !data.id) return;
+    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', data.id), data);
+  };
+
+  const recalculateProfile = (profile) => {
+    const history = profile.history || [];
+    const snapshots = profile.snapshots || [];
+    const getEventTime = (ev) => ev.timestamp || new Date(ev.date).getTime();
+    
+    const allEvents = [
+      ...history.map(h => ({ ...h, type: 'contribution', time: getEventTime(h) })),
+      ...snapshots.map(s => ({ ...s, type: 'snapshot', time: getEventTime(s) }))
+    ].sort((a, b) => a.time - b.time);
+
+    let currentBalance = 0;
+    let currentContributed = 0;
+
+    allEvents.forEach(ev => {
+      if (ev.type === 'contribution') {
+        currentContributed += ev.amount;
+        currentBalance += ev.amount;
+      } else if (ev.type === 'snapshot') {
+        currentBalance = ev.balance; 
+      }
+    });
+
+    return { ...profile, totalContributed: currentContributed, realBalance: currentBalance };
+  };
+
+  const handleAddSaving = async () => {
+    if (!newAmount || isNaN(newAmount)) return;
+    const amount = parseFloat(newAmount);
+    const newEntry = { 
+      id: Date.now().toString(), 
+      date: new Date().toLocaleDateString(), 
+      timestamp: Date.now(),
+      amount, 
+      note: newNote || 'Ahorro' 
+    };
+    const updated = recalculateProfile({ 
+      ...activeProfile, 
+      history: [...(activeProfile.history || []), newEntry] 
+    });
+    await saveToCloud(updated);
+    setNewAmount(''); setNewNote(''); setShowAddModal(false);
+  };
+
+  const handleAdminSync = async () => {
+    if (!adminRealBalance || isNaN(adminRealBalance)) return;
+    const balance = parseFloat(adminRealBalance);
+    const newSnapshot = { 
+      id: Date.now().toString(), 
+      date: new Date().toLocaleDateString(), 
+      timestamp: Date.now(),
+      balance 
+    };
+    const updated = recalculateProfile({ 
+      ...activeProfile, 
+      snapshots: [...(activeProfile.snapshots || []), newSnapshot] 
+    });
+    await saveToCloud(updated);
+    setAdminRealBalance(''); setShowAdminModal(false);
+  };
+
+  const deleteRecord = async (id, type) => {
+    let history = activeProfile.history || [];
+    let snapshots = activeProfile.snapshots || [];
+    if (type === 'Ahorro') history = history.filter(h => h.id !== id);
+    else snapshots = snapshots.filter(s => s.id !== id);
+    
+    const updated = recalculateProfile({ ...activeProfile, history, snapshots });
+    await saveToCloud(updated);
+  };
+
+  const handleSaveGoal = async () => {
+    if (!newGoalName || !newGoalTarget) return;
+    let goals = activeProfile.goals || [];
+    if (editingGoalId) {
+      goals = goals.map(g => g.id === editingGoalId ? { ...g, name: newGoalName, target: parseFloat(newGoalTarget) } : g);
+    } else {
+      goals.push({ id: Date.now().toString(), name: newGoalName, target: parseFloat(newGoalTarget) });
+    }
+    await saveToCloud({ ...activeProfile, goals });
+    setNewGoalName(''); setNewGoalTarget(''); setEditingGoalId(null); setShowGoalModal(false);
+  };
+
+  const deleteGoal = async (id) => {
+    await saveToCloud({ ...activeProfile, goals: (activeProfile.goals || []).filter(g => g.id !== id) });
+  };
+
+  const handleAddAchievement = async () => {
+    const achievements = activeProfile.achievements || [];
+    achievements.push({
+      id: Date.now().toString(),
+      label: newAchName,
+      target: parseFloat(newAchTarget),
+      type: newAchType,
+      icon: newAchIcon,
+      color: 'from-yellow-400 to-orange-600'
+    });
+    await saveToCloud({ ...activeProfile, achievements });
+    setNewAchName(''); setNewAchTarget('');
+  };
+
+  const handleAddProfile = async () => {
+    if (!newName) return;
+    const id = newName.toLowerCase().replace(/\s+/g, '-');
+    const newProf = { 
+      id, 
+      name: newName, 
+      theme: newTheme, 
+      emoji: newEmoji, 
+      realBalance: 0, 
+      totalContributed: 0, 
+      history: [], 
+      snapshots: [], 
+      goals: [], 
+      achievements: [
+        { id: 'd1', label: 'Primer Ahorro', target: 500, type: 'ahorro', icon: 'Coins', color: 'from-yellow-400 to-orange-600' }
+      ], 
+      config: { iceCreamPrice: 45, moviePrice: 120 } 
+    };
+    await saveToCloud(newProf);
+    setActiveProfileId(id);
+    setNewName(''); setShowProfileModal(false);
+  };
+
+  // --- Derived State ---
+  const combinedRecords = useMemo(() => {
+    const history = (activeProfile.history || []).map(h => ({ ...h, type: 'Ahorro', color: 'text-green-500', icon: Coins }));
+    const snapshots = (activeProfile.snapshots || []).map(s => ({ ...s, amount: s.balance, note: 'Sincronización Papá', type: 'Ajuste', color: 'text-indigo-500', icon: ShieldCheck }));
+    return [...history, ...snapshots].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  }, [activeProfile]);
+
+  const growthHistory = useMemo(() => {
+    const all = [
+      ...(activeProfile.history || []).map(h => ({ ...h, type: 'contribution', t: h.timestamp || 0 })),
+      ...(activeProfile.snapshots || []).map(s => ({ ...s, type: 'snapshot', t: s.timestamp || 0 }))
+    ].sort((a, b) => a.t - b.t);
+
+    let timeline = []; let runningCont = 0; let runningBal = 0;
+    all.forEach(ev => {
+      if (ev.type === 'contribution') { runningCont += ev.amount; runningBal += ev.amount; }
+      else { runningBal = ev.balance; }
+      timeline.push({ date: ev.date, balance: runningBal, contributed: runningCont });
+    });
+    return timeline;
+  }, [activeProfile]);
+
+  const sourceData = useMemo(() => {
+    const groups = (activeProfile.history || []).reduce((acc, h) => {
+      const label = h.note || 'Otros';
+      acc[label] = (acc[label] || 0) + h.amount;
+      return acc;
+    }, {});
+    return Object.entries(groups).map(([label, value]) => ({ label, value }));
+  }, [activeProfile]);
+
+  if (loading) return (
+    <div className="h-screen flex items-center justify-center bg-sky-50 flex-col gap-6 text-sky-600 font-black text-3xl animate-pulse">
+      <Cloud size={80} /> CONECTANDO A LA NUBE...
+    </div>
+  );
+
+  const curBal = activeProfile.realBalance || 0;
+  const earnings = Math.max(0, curBal - (activeProfile.totalContributed || 0));
+  const iceCreamCount = Math.floor(earnings / (activeProfile.config?.iceCreamPrice || 45));
+  const ticketCount = Math.floor(earnings / (activeProfile.config?.moviePrice || 120));
+
+  return (
+    <div className={`min-h-screen ${theme.light} p-4 md:p-8 transition-all font-['Fredoka',sans-serif]`}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');`}</style>
+      
+      <div className="max-w-7xl mx-auto space-y-8">
+        
+        {/* Profile Selector Toolbar */}
+        <div className="flex flex-wrap items-center justify-between gap-4 bg-white/70 backdrop-blur-md p-4 rounded-[2.5rem] border-4 border-white shadow-xl">
+          <div className="flex items-center gap-3">
+            {profiles.map(p => (
+              <button 
+                key={p.id} 
+                onClick={() => setActiveProfileId(p.id)} 
+                className={`px-6 md:px-8 py-3 rounded-[1.5rem] font-black text-lg transition-all transform hover:scale-105 active:translate-y-1 ${activeProfileId === p.id ? `${colorThemes[p.theme].bg} text-white ${colorThemes[p.theme].shadow}` : 'bg-white text-slate-400 shadow-[0_6px_0_0_#e2e8f0]'}`}
+              >
+                {p.emoji} <span className="hidden sm:inline ml-2">{p.name}</span>
+              </button>
+            ))}
+            <button onClick={() => setShowProfileModal(true)} className="p-3 bg-white rounded-full shadow-[0_4px_0_0_#e2e8f0] text-slate-300 hover:text-indigo-500 transition-all">
+              <Plus size={28} />
+            </button>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => setShowSettingsModal(true)} className={`p-4 ${theme.bg} text-white rounded-2xl shadow-lg transition-all transform hover:rotate-12`}>
+              <Palette size={24} />
+            </button>
+            <button onClick={() => setShowAdminModal(true)} className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-2xl text-xs font-black shadow-[0_6px_0_0_#000] uppercase tracking-widest">
+              <ShieldCheck size={16} /> Panel Papá
+            </button>
+          </div>
+        </div>
+
+        {/* Hero Header */}
+        <header className={`flex flex-col md:flex-row justify-between items-center gap-8 bg-gradient-to-br ${theme.gradient} p-8 md:p-12 rounded-[4rem] text-white shadow-2xl relative overflow-hidden`}>
+          <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+            <div className="bg-white/30 p-8 rounded-[3rem] backdrop-blur-lg animate-bounce border-4 border-white/20 shadow-2xl text-7xl">
+              {activeProfile.emoji}
+            </div>
+            <div>
+              <h1 className="text-4xl md:text-6xl font-black mb-2 tracking-tighter leading-none">¡Hola, {activeProfile.name}!</h1>
+              <div className="bg-yellow-400 text-yellow-900 px-6 py-2 rounded-full text-lg font-black uppercase tracking-widest shadow-lg">🚀 ¡Aventura Ahorro!</div>
+            </div>
+          </div>
+          <button onClick={() => setShowAddModal(true)} className="bg-white text-slate-900 px-10 py-6 md:px-14 md:py-8 rounded-[3rem] font-black text-2xl md:text-3xl shadow-[0_15px_0_0_#f1f5f9] active:translate-y-3 active:shadow-none transition-all flex items-center gap-4 uppercase">
+            <PlusCircle className={theme.text} size={40} /> ¡Sumar!
+          </button>
+        </header>
+
+        {/* Balance Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white rounded-[2.5rem] p-10 border-4 border-slate-50 shadow-[0_10px_0_0_#e2e8f0]">
+            <div className="flex justify-between items-center mb-6">
+              <span className="text-slate-400 font-black uppercase text-xs">Tesoro Total</span>
+              <div className={`p-4 rounded-3xl ${theme.light} ${theme.text}`}><Coins size={40} /></div>
+            </div>
+            <div className="text-6xl md:text-8xl font-black text-slate-800 tracking-tighter mb-4">${curBal.toLocaleString()}</div>
+            <p className="text-sm font-black text-slate-400 bg-slate-50 px-4 py-2 rounded-xl w-fit italic">Propio: ${(activeProfile.totalContributed || 0).toLocaleString()}</p>
+          </div>
+          <div className="bg-gradient-to-br from-green-400 to-emerald-600 rounded-[2.5rem] p-10 text-white shadow-[0_10px_0_0_#065f46]">
+            <div className="flex justify-between items-center mb-6">
+              <span className="opacity-70 font-black uppercase text-xs">Ganancia Mágica</span>
+              <div className="p-4 rounded-3xl bg-white/20"><Zap size={40} /></div>
+            </div>
+            <div className="text-6xl md:text-8xl font-black tracking-tighter mb-4">+${earnings.toLocaleString()}</div>
+            <div className="bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full w-fit font-black text-xl">¡Más dinero gratis! ✨</div>
+          </div>
+        </div>
+
+        {/* Rewards Section */}
+        <section className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-[3rem] p-8 md:p-12 border-4 border-white shadow-xl">
+          <h2 className="font-black mb-10 text-3xl md:text-4xl text-slate-800 flex items-center gap-4">
+            <PartyPopper size={36} className="text-indigo-500" /> ¡Premios Ganados!
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className={`p-8 rounded-[3rem] flex items-center gap-8 border-4 transition-all ${iceCreamCount > 0 ? 'bg-white border-rose-200 shadow-xl' : 'bg-white/50 opacity-50 grayscale'}`}>
+              <div className="bg-rose-500 p-6 md:p-8 rounded-[2rem] text-white shadow-md">
+                <IceCream size={56} />
+              </div>
+              <div>
+                <div className={`text-6xl md:text-7xl font-black leading-none ${iceCreamCount > 0 ? 'text-rose-600' : 'text-slate-400'}`}>{iceCreamCount}</div>
+                <div className="text-lg md:text-xl font-black uppercase text-slate-500 tracking-widest mt-3">Helados</div>
+              </div>
+            </div>
+            <div className={`p-8 rounded-[3rem] flex items-center gap-8 border-4 transition-all ${ticketCount > 0 ? 'bg-white border-sky-200 shadow-xl' : 'bg-white/50 opacity-50 grayscale'}`}>
+              <div className="bg-sky-500 p-6 md:p-8 rounded-[2rem] text-white shadow-md">
+                <Ticket size={56} />
+              </div>
+              <div>
+                <div className={`text-6xl md:text-7xl font-black leading-none ${ticketCount > 0 ? 'text-sky-600' : 'text-slate-400'}`}>{ticketCount}</div>
+                <div className="text-lg md:text-xl font-black uppercase text-slate-500 tracking-widest mt-3">Cines</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Charts & Analytics */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border-4 border-slate-50 shadow-lg">
+            <h2 className="text-3xl font-black mb-10 flex items-center gap-4"><PieChart size={32} className="text-amber-500" /> ¿De dónde viene?</h2>
+            <PieChartSources data={sourceData} />
+          </div>
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border-4 border-slate-50 shadow-lg">
+            <h2 className="text-3xl font-black mb-10 flex items-center gap-4"><Mountain size={32} className={theme.text} /> Tu Montaña</h2>
+            <div className="h-[300px]">
+              <GrowthLineChart data={growthHistory} color={theme.chart} />
+            </div>
+          </div>
+        </div>
+
+        {/* Achievements & Goals */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          {/* Achievements (Medals) */}
+          <div className="xl:col-span-1 space-y-6">
+            <h2 className="text-3xl font-black flex items-center gap-4 px-4"><Award size={40} className="text-amber-500" /> Mis Logros</h2>
+            <div className="space-y-4">
+              {(activeProfile.achievements || []).map(ach => {
+                const unlocked = ach.type === 'ahorro' ? (activeProfile.totalContributed >= ach.target) : (earnings >= ach.target);
+                const Icon = achievementIcons[ach.icon] || Trophy;
+                return (
+                  <div key={ach.id} className={`p-6 rounded-[2rem] flex items-center gap-6 border-4 transition-all ${unlocked ? 'bg-yellow-50 border-yellow-300 shadow-[0_8px_0_0_#fde047]' : 'bg-white opacity-60 border-slate-100 grayscale'}`}>
+                    <div className={`p-4 rounded-2xl ${unlocked ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white shadow-lg' : 'bg-slate-200 text-slate-400'}`}>
+                      <Icon size={32} />
+                    </div>
+                    <div>
+                      <div className="font-black text-xl leading-tight">{ach.label}</div>
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                        {unlocked ? '¡Desbloqueado! 🏆' : `Meta: $${ach.target.toLocaleString()}`}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Goals (Dreams) */}
+          <div className="xl:col-span-2 space-y-6">
+            <h2 className="text-3xl font-black flex items-center gap-4 px-4"><Heart size={40} className="text-rose-500" /> Mis Sueños</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {(activeProfile.goals || []).map(g => {
+                const completed = curBal >= g.target;
+                const progress = Math.min(100, (curBal / g.target) * 100);
+                return (
+                  <div key={g.id} className={`p-8 rounded-[2.5rem] border-4 transition-all group relative ${completed ? 'bg-green-50 border-green-300 shadow-[0_8px_0_0_#22c55e]' : 'bg-white border-slate-100 shadow-[0_8px_0_0_#e2e8f0]'}`}>
+                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => { setEditingGoalId(g.id); setNewGoalName(g.name); setNewGoalTarget(g.target); setShowGoalModal(true); }} className="p-2 bg-white rounded-full shadow-md text-blue-500"><Edit2 size={16} /></button>
+                      <button onClick={() => deleteGoal(g.id)} className="p-2 bg-white rounded-full shadow-md text-red-500"><Trash2 size={16} /></button>
+                    </div>
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className={`p-4 rounded-2xl ${completed ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400'}`}><Gift size={32} /></div>
+                      <h3 className="font-black text-2xl truncate">{g.name}</h3>
+                    </div>
+                    <div className="w-full h-8 bg-slate-100 rounded-full border-2 border-white shadow-inner mb-4 overflow-hidden">
+                      <div className={`h-full transition-all duration-1000 ${completed ? 'bg-green-500' : theme.bg}`} style={{ width: `${progress}%` }}></div>
+                    </div>
+                    <div className="flex justify-between font-black text-sm">
+                      <span>${Math.floor(curBal).toLocaleString()}</span>
+                      <span className={theme.text}>Meta: ${g.target.toLocaleString()}</span>
+                    </div>
+                  </div>
+                );
+              })}
+              <button onClick={() => { setEditingGoalId(null); setNewGoalName(''); setNewGoalTarget(''); setShowGoalModal(true); }} className="p-12 border-4 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center gap-4 text-slate-300 hover:border-indigo-400 hover:text-indigo-400 transition-all bg-white/50">
+                <span className="text-4xl">✨</span>
+                <span className="font-black uppercase tracking-widest">Nuevo Sueño</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* --- Modals --- */}
+      
+      {/* Modal Sumar Ahorro */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl space-y-8">
+            <h2 className="text-4xl font-black text-center text-indigo-600 uppercase">¡Sumar!</h2>
+            <div className="space-y-4">
+              <input 
+                type="number" 
+                value={newAmount} 
+                onChange={(e) => setNewAmount(e.target.value)} 
+                className="w-full p-6 text-5xl font-black text-center bg-slate-50 rounded-[2rem] border-4 border-slate-100 focus:border-indigo-500 outline-none" 
+                placeholder="0" 
+              />
+              <input 
+                type="text" 
+                value={newNote} 
+                onChange={(e) => setNewNote(e.target.value)} 
+                className="w-full p-4 text-xl font-black text-center bg-slate-50 rounded-2xl border-4 border-slate-100 focus:border-indigo-500 outline-none" 
+                placeholder="¿De dónde salió?" 
+              />
+            </div>
+            <div className="flex gap-4">
+              <button onClick={() => setShowAddModal(false)} className="flex-1 py-4 font-black text-slate-400">Cerrar</button>
+              <button onClick={handleAddSaving} className={`flex-1 py-4 rounded-2xl font-black text-white text-2xl ${theme.bg} shadow-lg active:translate-y-1`}>LISTO</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Panel Papá Modal */}
+      {showAdminModal && (
+        <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-2xl z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[3rem] p-8 max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+            <div className="flex items-center gap-4 mb-8">
+              <ShieldCheck size={40} className="text-indigo-600" />
+              <h2 className="text-3xl font-black text-slate-800 uppercase">Panel Papá</h2>
+            </div>
+            
+            <div className="flex gap-2 p-2 bg-slate-100 rounded-2xl mb-6">
+              {['balance', 'history', 'achievements', 'config'].map(tab => (
+                <button key={tab} onClick={() => setAdminTab(tab)} className={`flex-1 py-3 rounded-xl font-black text-sm transition-all ${adminTab === tab ? 'bg-white shadow-md text-indigo-600' : 'text-slate-400'}`}>
+                  {tab === 'balance' ? 'Saldo Real' : tab === 'history' ? 'Registros' : tab === 'achievements' ? 'Logros' : 'Precios'}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+              {adminTab === 'balance' && (
+                <div className="space-y-6 py-4">
+                  <p className="text-slate-500 font-bold text-center">Ingresa el saldo actual en la cuenta de inversión:</p>
+                  <input 
+                    type="number" 
+                    value={adminRealBalance} 
+                    onChange={(e) => setAdminRealBalance(e.target.value)} 
+                    className="w-full p-8 text-6xl font-black text-center bg-slate-50 rounded-[2.5rem] border-4 border-slate-100" 
+                    placeholder="0.00" 
+                  />
+                  <button onClick={handleAdminSync} className="w-full py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-2xl shadow-xl">SINCRONIZAR</button>
+                </div>
+              )}
+              
+              {adminTab === 'history' && (
+                <div className="space-y-3 py-4">
+                  {combinedRecords.map(r => (
+                    <div key={r.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-xl bg-white ${r.color}`}><r.icon size={20} /></div>
+                        <div>
+                          <div className="font-black text-slate-700">{r.note}</div>
+                          <div className="text-[10px] font-black text-slate-400 uppercase">{r.date}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className={`font-black ${r.color}`}>${r.amount?.toLocaleString()}</span>
+                        <button onClick={() => deleteRecord(r.id, r.type)} className="p-2 text-red-400 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {adminTab === 'achievements' && (
+                <div className="space-y-6 py-4">
+                  <div className="bg-indigo-50 p-6 rounded-2xl space-y-4">
+                    <h3 className="font-black text-indigo-800">Nuevo Logro</h3>
+                    <input type="text" placeholder="Nombre" value={newAchName} onChange={e=>setNewAchName(e.target.value)} className="w-full p-3 rounded-xl border-2 border-white outline-none font-bold" />
+                    <input type="number" placeholder="Meta $" value={newAchTarget} onChange={e=>setNewAchTarget(e.target.value)} className="w-full p-3 rounded-xl border-2 border-white outline-none font-bold" />
+                    <div className="flex gap-2">
+                      <select value={newAchType} onChange={e=>setNewAchType(e.target.value)} className="flex-1 p-3 rounded-xl font-bold bg-white outline-none">
+                        <option value="ahorro">Ahorro Propio</option>
+                        <option value="ganancia">Rendimientos</option>
+                      </select>
+                      <select value={newAchIcon} onChange={e=>setNewAchIcon(e.target.value)} className="flex-1 p-3 rounded-xl font-bold bg-white outline-none">
+                        {Object.keys(achievementIcons).map(i => <option key={i} value={i}>{i}</option>)}
+                      </select>
+                    </div>
+                    <button onClick={handleAddAchievement} className="w-full py-3 bg-indigo-600 text-white font-black rounded-xl">CREAR</button>
+                  </div>
+                </div>
+              )}
+
+              {adminTab === 'config' && (
+                <div className="space-y-6 py-4">
+                   <div className="grid grid-cols-2 gap-4">
+                     <div className="bg-rose-50 p-6 rounded-2xl text-center">
+                        <label className="text-xs font-black text-rose-600 uppercase block mb-2">Precio Helado $</label>
+                        <input type="number" value={activeProfile.config?.iceCreamPrice} onChange={e => saveToCloud({...activeProfile, config: {...activeProfile.config, iceCreamPrice: parseFloat(e.target.value)}})} className="w-full p-4 rounded-xl font-black text-center text-2xl" />
+                     </div>
+                     <div className="bg-sky-50 p-6 rounded-2xl text-center">
+                        <label className="text-xs font-black text-sky-600 uppercase block mb-2">Precio Cine $</label>
+                        <input type="number" value={activeProfile.config?.moviePrice} onChange={e => saveToCloud({...activeProfile, config: {...activeProfile.config, moviePrice: parseFloat(e.target.value)}})} className="w-full p-4 rounded-xl font-black text-center text-2xl" />
+                     </div>
+                   </div>
+                </div>
+              )}
+            </div>
+
+            <button onClick={() => setShowAdminModal(false)} className="mt-8 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl">CERRAR PANEL</button>
+          </div>
+        </div>
+      )}
+
+      {/* Settings Modal */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl text-center">
+            <h2 className="text-3xl font-black mb-8 uppercase">Personalizar</h2>
+            <div className="space-y-8">
+              <div>
+                <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Color Favorito</p>
+                <div className="flex gap-3 justify-center flex-wrap">
+                  {Object.entries(colorThemes).map(([name, val]) => (
+                    <button key={name} onClick={() => setNewTheme(name)} className={`w-10 h-10 rounded-full transition-all ${val.bg} ${newTheme === name ? 'ring-4 ring-indigo-200 scale-125' : 'opacity-40'}`} />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Tu Emoji</p>
+                <div className="flex gap-2 justify-center flex-wrap bg-slate-50 p-4 rounded-2xl max-h-40 overflow-y-auto">
+                  {availableEmojis.map(e => (
+                    <button key={e} onClick={() => setNewEmoji(e)} className={`text-2xl p-2 rounded-xl transition-all ${newEmoji === e ? 'bg-white shadow-md scale-110' : 'hover:scale-110 opacity-60 hover:opacity-100'}`}>{e}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <button onClick={() => setShowSettingsModal(false)} className="flex-1 py-4 font-black text-slate-400">Cerrar</button>
+                <button onClick={async () => { await saveToCloud({...activeProfile, theme: newTheme, emoji: newEmoji}); setShowSettingsModal(false); }} className={`flex-2 py-4 px-8 rounded-2xl font-black text-white bg-indigo-600 shadow-xl active:translate-y-1`}>GUARDAR</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* New Profile Modal */}
+      {showProfileModal && (
+        <div className="fixed inset-0 bg-indigo-950/90 backdrop-blur-2xl z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl text-center">
+            <h2 className="text-4xl font-black mb-8 uppercase text-indigo-900">Nuevo Perfil</h2>
+            <div className="space-y-6">
+              <input type="text" value={newName} onChange={e => setNewName(e.target.value)} className="w-full p-6 bg-slate-50 border-4 border-slate-100 rounded-[2rem] font-black text-2xl text-center" placeholder="¿Cómo te llamas?" />
+              <div className="flex gap-4">
+                <button onClick={() => setShowProfileModal(false)} className="flex-1 py-4 font-black text-slate-400">Volver</button>
+                <button onClick={handleAddProfile} className="flex-2 py-4 px-10 bg-indigo-600 text-white rounded-[2rem] font-black text-2xl">¡LISTA!</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Goal Modal */}
+      {showGoalModal && (
+        <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl text-center space-y-6">
+            <h2 className="text-3xl font-black uppercase text-indigo-600">{editingGoalId ? 'Editar Sueño' : 'Nuevo Sueño'}</h2>
+            <input type="text" value={newGoalName} onChange={e => setNewGoalName(e.target.value)} className="w-full p-5 bg-slate-50 border-4 border-slate-100 rounded-2xl font-black text-xl text-center" placeholder="¿Qué quieres comprar?" />
+            <input type="number" value={newGoalTarget} onChange={e => setNewGoalTarget(e.target.value)} className="w-full p-5 bg-slate-50 border-4 border-slate-100 rounded-2xl font-black text-3xl text-center" placeholder="$ Costo" />
+            <div className="flex gap-4">
+              <button onClick={() => setShowGoalModal(false)} className="flex-1 py-4 font-black text-slate-400">Cerrar</button>
+              <button onClick={handleSaveGoal} className={`flex-2 py-4 px-8 rounded-2xl font-black text-white ${theme.bg} text-xl shadow-lg`}>GUARDAR</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
