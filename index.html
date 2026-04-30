@@ -4,11 +4,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cetes Kids: Aventura en la Nube</title>
     
-    <!-- 🚀 Icono Mejorado para el iPad/iPhone -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%234f46e5'/%3E%3Ctext y='75' x='10' font-family='Arial' font-size='70'%3E🚀%3C/text%3E%3C/svg%3E">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%234f46e5'/%3E%3Ctext y='75' x='10' font-family='Arial' font-size='70'%3E🚀%3C/text%3E%3C/svg%3E">
-    
-    <!-- Configuración modo App -->
+    <!-- 🚀 Icono para el iPad/iPhone mejorado -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234f46e5'/%3E%3Ctext y='78' x='10' font-family='Arial' font-size='70'%3E🚀%3C/text%3E%3C/svg%3E">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Cetes Kids">
@@ -30,7 +27,6 @@
             padding: 0;
             overflow-x: hidden;
             color: #1e293b;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .card-3d {
@@ -79,7 +75,7 @@
             transition: all 0.2s;
             padding: 15px;
             border-radius: 1.5rem;
-            border: 2px solid transparent;
+            border: 4px solid transparent;
         }
         .emoji-option:hover { transform: scale(1.2); background: #f1f5f9; }
         .emoji-selected { background: #f0f9ff; border-color: #3b82f6; transform: scale(1.1); }
@@ -99,24 +95,21 @@
             animation: shine 3s infinite;
         }
         @keyframes shine { 0% { left: -100%; } 100% { left: 100%; } }
-
-        .medal-locked {
-            filter: grayscale(0.8) opacity(0.7);
-        }
+        .medal-locked { filter: grayscale(0.8) opacity(0.7); }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
-    <!-- 🔑 CONFIGURACIÓN DE FIREBASE 🔑 -->
+    <!-- 🔑 CONFIGURACIÓN DE FIREBASE INTEGRADA 🔑 -->
     <script>
         window.USER_FIREBASE_CONFIG = {
             apiKey: "AIzaSyCgh9G37P75Z1L53JZzI2jjL4GBgcV74Pk",
-  authDomain: "ceteskids.firebaseapp.com",
-  projectId: "ceteskids",
-  storageBucket: "ceteskids.firebasestorage.app",
-  messagingSenderId: "819262734652",
-  appId: "1:819262734652:web:c385b1479ea83448975e39"
+            authDomain: "ceteskids.firebaseapp.com",
+            projectId: "ceteskids",
+            storageBucket: "ceteskids.firebasestorage.app",
+            messagingSenderId: "819262734652",
+            appId: "1:819262734652:web:c385b1479ea83448975e39"
         };
         window.USER_APP_ID = "ahorros-majo-ivanna-2024";
     </script>
@@ -147,12 +140,11 @@
                 amber: { bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-50', border: 'border-amber-200', shadow: 'shadow-[0_8px_0_0_#d97706]', gradient: 'from-amber-400 to-orange-600', chart: '#fbbf24' }
             };
 
-            const achievementColors = ['from-yellow-400 to-orange-600', 'from-emerald-400 to-teal-600', 'from-purple-400 to-fuchsia-600', 'from-sky-400 to-indigo-600'];
-            const availableEmojis = ['👧', '👦', '😎', '🤩', '🤠', '👻', '🤖', '🎨', '🍦', '🎮', '🦄', '🐱', '🐶', '🐰', '🦊', '⭐', '✨', '🪄', '🚀', '🌈', '💎', '👑', '💃', '🛹', '🧩', '🧸'];
+            const availableEmojis = ['👧', '👦', '😎', '🤩', '🤠', '👻', '🤖', '🎨', '🍦', '🎮', '🦄', '🐱', '🐶', '🐰', '🦊', '⭐', '✨', '🪄', '🚀', '🌈', '💎', '👑', '💃', '⚽', '🛹', '🎸', '🧩', '🧸'];
 
             const PieChartSources = ({ data }) => {
                 if (!data || data.length === 0) return <div className="text-center py-8 text-slate-400 font-bold italic">¡Aún no hay ahorros!</div>;
-                const total = data.reduce((sum, item) => sum + item.value, 0);
+                const total = data.reduce((sum, item) => sum + (item.value || 0), 0);
                 let cumulativePercent = 0;
                 const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
                 return (
@@ -170,7 +162,7 @@
                             </svg>
                             <div className="absolute inset-0 flex items-center justify-center flex-col text-center">
                                 <span className="text-[10px] font-black text-slate-400 uppercase leading-none tracking-tighter">Total</span>
-                                <span className="text-xl font-black text-slate-800">${total.toLocaleString()}</span>
+                                <span className="text-xl font-black text-slate-800">${(total || 0).toLocaleString()}</span>
                             </div>
                         </div>
                         <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto pr-4 custom-scrollbar w-full">
@@ -180,7 +172,7 @@
                                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors[i % colors.length] }}></div>
                                         <span className="font-bold text-slate-700 text-sm truncate max-w-[120px]">{item.label}</span>
                                     </div>
-                                    <span className="font-black text-slate-800 text-sm">${item.value.toLocaleString()}</span>
+                                    <span className="font-black text-slate-800 text-sm">${(item.value || 0).toLocaleString()}</span>
                                 </div>
                             ))}
                         </div>
@@ -189,12 +181,12 @@
             };
 
             const GrowthLineChart = ({ data, color }) => {
-                if (!data || data.length < 2) return <div className="h-full flex items-center justify-center text-slate-400 font-bold italic p-8 text-center bg-white rounded-[2rem] border-4 border-dashed border-slate-100">¡Sincroniza el saldo real para ver tu montaña!</div>;
+                if (!data || data.length < 2) return <div className="h-full flex flex-col items-center justify-center text-slate-400 font-bold italic p-8 text-center bg-white rounded-[2rem] border-4 border-dashed border-slate-100"><SafeIcon name="Mountain" size={64} className="mb-4 opacity-20" /><p>Sincroniza el saldo real para ver tu montaña</p></div>;
                 const width = 800, height = 300, padding = 60;
-                const maxVal = Math.max(...data.map(d => d.balance)) * 1.2;
+                const maxVal = Math.max(...data.map(d => d.balance || 0)) * 1.2;
                 const points = data.map((d, i) => ({
                     x: padding + (i * (width - 2 * padding)) / (data.length - 1),
-                    y: height - padding - ((d.balance) * (height - 2 * padding)) / (maxVal)
+                    y: height - padding - ((d.balance || 0) * (height - 2 * padding)) / (maxVal || 1)
                 }));
                 const pathData = `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ');
                 return (
@@ -203,7 +195,7 @@
                         {points.map((p, i) => (
                             <g key={i}>
                                 <circle cx={p.x} cy={p.y} r="12" fill="white" stroke={color} strokeWidth="6" />
-                                <text x={p.x} y={p.y - 35} textAnchor="middle" fontSize="14" fontWeight="900" fill={color}>${data[i].balance.toLocaleString()}</text>
+                                <text x={p.x} y={p.y - 35} textAnchor="middle" fontSize="14" fontWeight="900" fill={color}>${(data[i].balance || 0).toLocaleString()}</text>
                             </g>
                         ))}
                     </svg>
@@ -215,7 +207,6 @@
                 const [user, setUser] = useState(null);
                 const [profiles, setProfiles] = useState([]);
                 const [loading, setLoading] = useState(true);
-                const [errorMsg, setErrorMsg] = useState(null);
                 const [activeProfileId, setActiveProfileId] = useState(null);
                 
                 const [showAddModal, setShowAddModal] = useState(false);
@@ -233,11 +224,10 @@
                 const [newGoalTarget, setNewGoalTarget] = useState('');
                 const [editingGoalId, setEditingGoalId] = useState(null);
 
-                // Estados de Logros Nuevos
+                // Estados de Logros
                 const [newAchName, setNewAchName] = useState('');
                 const [newAchTarget, setNewAchTarget] = useState('');
                 const [newAchType, setNewAchType] = useState('ahorro');
-                const [newAchIcon, setNewAchIcon] = useState('Trophy');
 
                 const appId = window.USER_APP_ID;
 
@@ -246,14 +236,13 @@
                         const { initializeApp, getAuth, getFirestore, signInAnonymously, onAuthStateChanged } = window.FirebaseSDK;
                         try {
                             const config = window.USER_FIREBASE_CONFIG;
-                            if (!config || config.apiKey === "TU_API_KEY") return setLoading(false);
                             const app = initializeApp(config);
                             const auth = getAuth(app);
                             const firestore = getFirestore(app);
                             setDb(firestore);
                             await signInAnonymously(auth);
                             onAuthStateChanged(auth, setUser);
-                        } catch (e) { console.error(e); setLoading(false); }
+                        } catch (e) { console.error("Firebase error:", e); setLoading(false); }
                     };
                     init();
                 }, []);
@@ -262,11 +251,11 @@
                     if (!user || !db) return;
                     const { collection, query, onSnapshot, doc, setDoc } = window.FirebaseSDK;
                     const profilesCol = collection(db, 'artifacts', appId, 'public', 'data', 'profiles');
-                    const q = query(profilesCol);
                     
-                    const unsubscribe = onSnapshot(q, (snapshot) => {
+                    const unsubscribe = onSnapshot(query(profilesCol), (snapshot) => {
                         const loaded = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
                         if (loaded.length === 0) {
+                            // Cargar perfiles por defecto si la base de datos está vacía
                             const majo = { id: 'majo', name: 'Majo', theme: 'rose', emoji: '🎨', realBalance: 0, totalContributed: 0, history: [], snapshots: [], goals: [], achievements: [{id:'1', label:'Primer Ahorro', target:500, type:'ahorro', icon:'PiggyBank', color:'from-yellow-400 to-orange-600'}], config: { iceCreamPrice: 45, moviePrice: 120 } };
                             const ivanna = { id: 'ivanna', name: 'Ivanna', theme: 'indigo', emoji: '🦄', realBalance: 0, totalContributed: 0, history: [], snapshots: [], goals: [], achievements: [{id:'1', label:'Primer Ahorro', target:500, type:'ahorro', icon:'PiggyBank', color:'from-yellow-400 to-orange-600'}], config: { iceCreamPrice: 45, moviePrice: 120 } };
                             setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', 'majo'), majo);
@@ -275,9 +264,6 @@
                             setProfiles(loaded);
                             setActiveProfileId(prev => prev || loaded[0].id);
                         }
-                        setLoading(false);
-                    }, (err) => {
-                        console.error(err);
                         setLoading(false);
                     });
                     return () => unsubscribe();
@@ -288,7 +274,7 @@
 
                 const sourceData = useMemo(() => {
                     if (!activeProfile.history) return [];
-                    const groups = activeProfile.history.reduce((acc, h) => { const label = h.note || 'Otros'; acc[label] = (acc[label] || 0) + h.amount; return acc; }, {});
+                    const groups = activeProfile.history.reduce((acc, h) => { const label = h.note || 'Otros'; acc[label] = (acc[label] || 0) + (h.amount || 0); return acc; }, {});
                     return Object.entries(groups).map(([label, value]) => ({ label, value }));
                 }, [activeProfile.history]);
 
@@ -341,14 +327,6 @@
                     setAdminRealBalance(''); setShowAdminModal(false);
                 };
 
-                const deleteRecord = async (id, type) => {
-                    let newHistory = activeProfile.history || [];
-                    let newSnapshots = activeProfile.snapshots || [];
-                    if(type==='Ahorro') newHistory = newHistory.filter(h => h.id !== id);
-                    else newSnapshots = newSnapshots.filter(s => s.id !== id);
-                    await saveToCloud(recalculate({...activeProfile, history: newHistory, snapshots: newSnapshots}));
-                };
-
                 const handleSaveGoal = async () => {
                     if (!newGoalName || !newGoalTarget) return;
                     const newGoals = editingGoalId 
@@ -358,20 +336,23 @@
                     setNewGoalName(''); setNewGoalTarget(''); setEditingGoalId(null); setShowGoalModal(false);
                 };
 
-                const handleAddAchievement = async () => {
-                    if (!newAchName || !newAchTarget) return;
-                    const currentAchs = activeProfile.achievements || [];
-                    const newAch = { id: Date.now().toString(), label: newAchName, target: parseFloat(newAchTarget), type: newAchType, icon: newAchIcon, color: achievementColors[currentAchs.length % achievementColors.length] };
-                    await saveToCloud({...activeProfile, achievements: [...currentAchs, newAch]});
-                    setNewAchName(''); setNewAchTarget('');
+                const updateConfig = async (key, val) => {
+                    const value = parseFloat(val);
+                    if (isNaN(value)) return;
+                    const newConfig = { ...activeProfile.config, [key]: value };
+                    const { doc, updateDoc } = window.FirebaseSDK;
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', activeProfile.id), { config: newConfig });
                 };
 
-                const deleteAchievement = async (id) => {
-                    const newAchs = (activeProfile.achievements || []).filter(a => a.id !== id);
-                    await saveToCloud({...activeProfile, achievements: newAchs});
+                const deleteRecord = async (id, type) => {
+                    let newHistory = activeProfile.history || [];
+                    let newSnapshots = activeProfile.snapshots || [];
+                    if(type==='Ahorro') newHistory = newHistory.filter(h => h.id !== id);
+                    else newSnapshots = newSnapshots.filter(s => s.id !== id);
+                    await saveToCloud(recalculate({...activeProfile, history: newHistory, snapshots: newSnapshots}));
                 };
 
-                if (loading) return <div className="h-screen flex items-center justify-center font-black text-2xl text-indigo-600 animate-pulse uppercase tracking-tighter">CARGANDO NUBE FAMILIAR...</div>;
+                if (loading) return <div className="h-screen flex items-center justify-center font-black text-2xl text-indigo-600 animate-pulse uppercase">CARGANDO NUBE FAMILIAR...</div>;
 
                 const currentBalance = activeProfile.realBalance || 0;
                 const contributed = activeProfile.totalContributed || 0;
@@ -382,15 +363,19 @@
                 return (
                     <div className={`min-h-screen ${theme.light} p-4 md:p-8 fade-in transition-all duration-500`}>
                         <div className="max-w-7xl mx-auto">
-                            {/* Barra Perfiles */}
-                            <div className="flex items-center gap-4 mb-8 bg-white/70 backdrop-blur-md p-4 rounded-[2.5rem] border-4 border-white shadow-xl w-fit">
-                                {profiles.map(p => (
-                                    <button key={p.id} onClick={() => setActiveProfileId(p.id)} className={`px-8 py-3 rounded-[1.5rem] font-black text-lg transition-all btn-3d ${activeProfileId === p.id ? `${colorThemes[p.theme].bg} text-white ${colorThemes[p.theme].shadow}` : 'bg-white text-slate-400'}`}>
-                                        <span className="mr-2">{p.emoji || '⭐'}</span>{p.name}
-                                    </button>
-                                ))}
-                                <button onClick={() => { setNewTheme(activeProfile.theme); setNewEmoji(activeProfile.emoji); setShowSettingsModal(true); }} className={`p-4 ${theme.bg} text-white rounded-2xl shadow-lg btn-3d ${theme.shadow}`}><SafeIcon name="Palette" size={20} /></button>
-                                <button onClick={() => { setAdminRealBalance(currentBalance); setShowAdminModal(true); }} className="p-4 bg-slate-800 text-white rounded-2xl shadow-lg btn-3d shadow-[0_8px_0_0_#000]"><SafeIcon name="ShieldCheck" size={20} /></button>
+                            {/* Barra Superior Perfiles */}
+                            <div className="flex flex-wrap items-center justify-between gap-4 mb-8 bg-white/70 backdrop-blur-md p-4 rounded-[2.5rem] border-4 border-white shadow-xl">
+                                <div className="flex items-center gap-3">
+                                    {profiles.map(p => (
+                                        <button key={p.id} onClick={() => setActiveProfileId(p.id)} className={`px-8 py-3 rounded-[1.5rem] font-black text-lg transition-all btn-3d ${activeProfileId === p.id ? `${colorThemes[p.theme].bg} text-white ${colorThemes[p.theme].shadow}` : 'bg-white text-slate-400 shadow-[0_6px_0_0_#e2e8f0]'}`}>
+                                            <span className="mr-2">{p.emoji || '⭐'}</span>{p.name}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="flex gap-3">
+                                    <button onClick={() => { setNewTheme(activeProfile.theme); setNewEmoji(activeProfile.emoji); setShowSettingsModal(true); }} className={`p-4 ${theme.bg} text-white rounded-2xl shadow-lg btn-3d ${theme.shadow}`}><SafeIcon name="Palette" size={24} /></button>
+                                    <button onClick={() => { setAdminRealBalance(currentBalance); setAdminTab('balance'); setShowAdminModal(true); }} className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-2xl text-xs font-black shadow-[0_6px_0_0_#000] uppercase tracking-widest"><SafeIcon name="ShieldCheck" size={16} /> Panel Papá</button>
+                                </div>
                             </div>
 
                             <header className={`flex flex-col md:flex-row justify-between items-center mb-10 gap-8 bg-gradient-to-br ${theme.gradient} p-12 rounded-[4rem] text-white shadow-2xl relative overflow-hidden`}>
@@ -407,12 +392,12 @@
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                 <div className="card-3d p-12 text-center">
                                     <span className="text-slate-400 font-black uppercase text-xs tracking-widest block mb-4 italic">Tesoro Total</span>
-                                    <div className="text-8xl font-black text-slate-800 tracking-tighter leading-none mb-4">${currentBalance.toLocaleString()}</div>
-                                    <p className="text-xl font-bold text-slate-400 italic">Tuyo: ${contributed.toLocaleString()}</p>
+                                    <div className="text-8xl font-black text-slate-800 tracking-tighter leading-none mb-4">${(currentBalance || 0).toLocaleString()}</div>
+                                    <p className="text-xl font-bold text-slate-400 italic">Tuyo: ${(contributed || 0).toLocaleString()}</p>
                                 </div>
                                 <div className="card-3d p-12 text-center bg-gradient-to-br from-green-400 to-emerald-600 border-none text-white shadow-[0_10px_0_0_#065f46]">
                                     <span className="opacity-70 font-black uppercase text-xs tracking-widest block mb-4 italic">Ganancia Mágica</span>
-                                    <div className="text-8xl font-black tracking-tighter leading-none mb-4">+${gain.toLocaleString()}</div>
+                                    <div className="text-8xl font-black tracking-tighter leading-none mb-4">+${(gain || 0).toLocaleString()}</div>
                                     <div className="bg-white/20 px-6 py-2 rounded-full w-fit mx-auto font-black text-xl italic tracking-tighter">¡Equivale a {iceCream} helados! 🍦</div>
                                 </div>
                             </div>
@@ -441,8 +426,8 @@
                                                     <h3 className="font-black text-3xl text-slate-800 leading-none truncate pr-4 italic tracking-tighter">{g.name}</h3>
                                                 </div>
                                                 <div className="w-full bg-slate-100 h-10 rounded-full overflow-hidden border-4 border-slate-100 shadow-inner"><div className={`h-full transition-all duration-1000 ${isCompleted ? 'bg-green-500' : theme.bg}`} style={{width: `${progress}%`}}></div></div>
-                                                <div className="flex justify-between font-black text-xl mt-4 px-2 uppercase italic tracking-tighter"><span>${currentBalance.toLocaleString()}</span><span className={theme.text}>Meta: ${g.target.toLocaleString()}</span></div>
-                                                {isCompleted && <div className="mt-6 text-center text-green-600 font-black text-2xl animate-bounce">¡LOGRADO! 🏆</div>}
+                                                <div className="flex justify-between font-black text-xl mt-4 px-2 uppercase italic tracking-tighter"><span>${(currentBalance || 0).toLocaleString()}</span><span className={theme.text}>Meta: ${(g.target || 0).toLocaleString()}</span></div>
+                                                {isCompleted && <div className="mt-6 text-center text-green-600 font-black text-2xl animate-bounce uppercase">¡Logrado! 🏆</div>}
                                             </div>
                                         );
                                     })}
@@ -455,17 +440,14 @@
                         {showAddModal && <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[100] fade-in"><div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl border-8 border-indigo-50 text-center"><h2 className="text-5xl font-black mb-10 text-indigo-600 uppercase italic tracking-tighter">¡Sumar!</h2><input type="number" value={newAmount} onChange={e=>setNewAmount(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none text-6xl font-black text-center mb-6 focus:border-indigo-500" placeholder="0" autoFocus /><input type="text" value={newNote} onChange={e=>setNewNote(e.target.value)} className="w-full p-6 bg-slate-50 border-4 border-slate-100 rounded-[2rem] outline-none font-black text-2xl text-center mb-8 focus:border-indigo-500" placeholder="¿De dónde salió?" /><div className="flex gap-4"><button onClick={()=>setShowAddModal(false)} className="flex-1 py-6 font-black text-slate-400 uppercase tracking-widest">Cerrar</button><button onClick={handleAddSaving} className={`flex-2 py-6 font-black ${theme.bg} text-white rounded-[2rem] text-3xl btn-3d ${theme.shadow}`}>Listo</button></div></div></div>}
                         
                         {showAdminModal && (
-                            <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-2xl flex items-center justify-center p-4 z-[100] fade-in"><div className="bg-white rounded-[4rem] p-10 max-w-3xl w-full shadow-2xl border-[12px] border-slate-100 overflow-y-auto max-h-[90vh] custom-scrollbar"><div className="flex items-center gap-6 mb-10 pb-8 border-b-4 border-slate-50"><div className="p-5 bg-indigo-600 text-white rounded-[2rem] shadow-xl"><SafeIcon name="ShieldCheck" size={48} /></div><h2 className="text-4xl font-black text-slate-800 tracking-tighter uppercase leading-none italic">Panel Papá</h2></div>
-                                <div className="flex gap-4 mb-10 bg-slate-100 p-3 rounded-[2.5rem] overflow-x-auto custom-scrollbar">{['balance', 'history', 'achievements', 'config'].map(tab => (<button key={tab} onClick={() => setAdminTab(tab)} className={`flex-1 py-4 px-6 font-black rounded-[2rem] text-lg transition-all min-w-[120px] ${adminTab===tab?'bg-white shadow-xl text-indigo-600':'text-slate-400'}`}>{tab==='balance'?'Saldo Real':tab==='history'?'Registros':tab==='achievements'?'Logros':'Ajustes'}</button>))}</div>
+                            <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-2xl flex items-center justify-center p-4 z-[100] fade-in text-center"><div className="bg-white rounded-[4rem] p-10 max-w-3xl w-full shadow-2xl border-[12px] border-slate-100 overflow-y-auto max-h-[90vh] custom-scrollbar"><div className="flex items-center gap-6 mb-10 pb-8 border-b-4 border-slate-50"><div className="p-5 bg-indigo-600 text-white rounded-[2rem] shadow-xl"><SafeIcon name="ShieldCheck" size={48} /></div><h2 className="text-4xl font-black text-slate-800 tracking-tighter uppercase leading-none italic">Panel Papá</h2></div>
+                                <div className="flex gap-4 mb-10 bg-slate-100 p-3 rounded-[2.5rem] overflow-x-auto custom-scrollbar">{['balance', 'history', 'config'].map(tab => (<button key={tab} onClick={() => setAdminTab(tab)} className={`flex-1 py-4 px-6 font-black rounded-[2rem] text-lg transition-all min-w-[120px] ${adminTab===tab?'bg-white shadow-xl text-indigo-600':'text-slate-400'}`}>{tab==='balance'?'Saldo Real':tab==='history'?'Registros':'Ajustes'}</button>))}</div>
                                 
                                 {adminTab==='balance' && <div className="space-y-10 py-4"><div className="text-center"><label className="text-xs font-black uppercase text-slate-400 block mb-3 tracking-widest italic">Saldo Actual en CetesDirecto ($)</label><input type="number" value={adminRealBalance} onChange={e=>setAdminRealBalance(e.target.value)} className="w-full p-12 bg-slate-50 border-8 border-slate-100 rounded-[4rem] outline-none text-8xl font-black text-center focus:border-indigo-500" placeholder="0.00" /></div><button onClick={handleAdminSync} className="w-full py-10 font-black bg-indigo-600 text-white rounded-[3.5rem] text-4xl shadow-[0_15px_0_0_#1e1b4b] active:top-2 relative uppercase italic tracking-widest leading-none">Sincronizar Nube</button></div>}
                                 
-                                {adminTab==='history' && <div className="space-y-4 py-4 pr-4 custom-scrollbar">{combinedRecords.map(r => (<div key={r.id} className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border-4 border-slate-100"><div className="flex items-center gap-4"><div className={`p-4 rounded-2xl ${r.bg} ${r.color}`}><SafeIcon name={r.icon} size={28} /></div><div><p className="font-black text-xl text-slate-700 leading-none">{r.note}</p><p className="text-[10px] font-black text-slate-400 mt-2 tracking-widest uppercase italic">{r.type} - {r.date}</p></div></div><div className="flex items-center gap-6"><span className={`text-3xl font-black ${r.color} tracking-tighter`}>${r.amount.toLocaleString()}</span><button onClick={()=>deleteRecord(r.id, r.type)} className="p-3 bg-white border-2 border-slate-200 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm"><SafeIcon name="Trash2" /></button></div></div>))}</div>}
+                                {adminTab==='history' && <div className="space-y-4 py-4 pr-4 custom-scrollbar">{(combinedRecords || []).map(r => (<div key={r.id} className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border-4 border-slate-100"><div className="flex items-center gap-4 text-left"><div className={`p-4 rounded-2xl ${r.bg} ${r.color}`}><SafeIcon name={r.icon} size={28} /></div><div><p className="font-black text-xl text-slate-700 leading-none">{r.note}</p><p className="text-[10px] font-black text-slate-400 mt-2 tracking-widest uppercase italic">{r.type} - {r.date}</p></div></div><div className="flex items-center gap-6 font-black text-2xl ${r.color} tracking-tighter">${(r.amount || 0).toLocaleString()}<button onClick={()=>deleteRecord(r.id, r.type)} className="p-3 bg-white border-2 border-slate-200 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm"><SafeIcon name="Trash2" /></button></div></div>))}</div>}
                                 
-                                {adminTab==='achievements' && <div className="space-y-8 py-4"><div className="bg-indigo-50 p-8 rounded-[3rem] border-4 border-indigo-100 mb-6"><h3 className="font-black text-indigo-800 mb-6 text-2xl tracking-tighter uppercase italic">Nuevo Logro</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><input type="text" placeholder="Nombre" value={newAchName} onChange={e=>setNewAchName(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-xl outline-none" /><input type="number" placeholder="Meta $" value={newAchTarget} onChange={e=>setNewAchTarget(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-xl outline-none" /></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"><select value={newAchType} onChange={e=>setNewAchType(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-slate-600 text-xl"><option value="ahorro">Por Ahorro</option><option value="ganancia">Por Ganancia</option></select><select value={newAchIcon} onChange={e=>setNewAchIcon(e.target.value)} className="p-6 rounded-2xl border-4 border-white font-black text-slate-600 text-xl"><option value="Trophy">🏆 Trofeo</option><option value="Star">⭐ Estrella</option><option value="Rocket">🚀 Cohete</option><option value="Gem">💎 Diamante</option></select></div><button onClick={handleAddAchievement} className="w-full py-6 bg-indigo-600 text-white font-black text-xl rounded-2xl shadow-lg">AÑADIR LOGRO</button></div><div className="space-y-4 max-h-80 overflow-y-auto pr-4">{ (activeProfile.achievements || []).map(ach => (<div key={ach.id} className="flex justify-between items-center bg-white p-6 rounded-[2rem] border-4 border-slate-100 shadow-sm"><div className="flex items-center gap-5"><div className={`p-4 rounded-full bg-gradient-to-br ${ach.color}`}><SafeIcon name={ach.icon} color="white" /></div><div><div className="font-black text-2xl text-slate-700">{ach.label}</div><div className="text-sm font-bold text-slate-400 uppercase tracking-widest">{ach.type}: ${(ach.target || 0).toLocaleString()}</div></div></div><button onClick={() => deleteAchievement(ach.id)} className="p-4 text-red-400 bg-red-50 hover:bg-red-500 hover:text-white rounded-2xl transition-all"><SafeIcon name="Trash2" /></button></div>)) }</div></div>}
-                                
-                                {adminTab==='config' && <div className="space-y-8 py-4 text-center"><div className="grid grid-cols-1 md:grid-cols-2 gap-8"><div className="bg-rose-50 p-8 rounded-[3rem] border-4 border-rose-100"><label className="font-black text-rose-600 block mb-4 uppercase text-xs tracking-widest italic">Helado $</label><input type="number" value={activeProfile.config?.iceCreamPrice} onChange={(e) => updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', activeProfile.id), {config:{...activeProfile.config, iceCreamPrice: parseFloat(e.target.value)}})} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-rose-200 text-5xl text-center outline-none" /></div><div className="bg-blue-50 p-8 rounded-[3rem] border-4 border-blue-100"><label className="font-black text-blue-600 block mb-4 uppercase text-xs tracking-widest italic">Cine $</label><input type="number" value={activeProfile.config?.moviePrice} onChange={(e) => updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', activeProfile.id), {config:{...activeProfile.config, moviePrice: parseFloat(e.target.value)}})} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-blue-200 text-5xl text-center outline-none" /></div></div></div>}
-                                
+                                {adminTab==='config' && <div className="space-y-8 py-4"><div className="grid grid-cols-1 md:grid-cols-2 gap-8"><div className="bg-rose-50 p-8 rounded-[3rem] border-4 border-rose-100"><label className="font-black text-rose-600 block mb-4 uppercase text-xs tracking-widest italic">Helado $</label><input type="number" defaultValue={activeProfile.config?.iceCreamPrice} onBlur={(e) => updateConfig('iceCreamPrice', e.target.value)} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-rose-200 text-5xl text-center outline-none" /></div><div className="bg-blue-50 p-8 rounded-[3rem] border-4 border-blue-100"><label className="font-black text-blue-600 block mb-4 uppercase text-xs tracking-widest italic">Cine $</label><input type="number" defaultValue={activeProfile.config?.moviePrice} onBlur={(e) => updateConfig('moviePrice', e.target.value)} className="w-full font-black bg-white p-6 rounded-[2rem] border-4 border-blue-200 text-5xl text-center outline-none" /></div></div></div>}
                                 <button onClick={()=>setShowAdminModal(false)} className="w-full mt-12 py-8 font-black bg-slate-100 text-slate-400 rounded-[3rem] text-2xl uppercase italic tracking-widest">Cerrar</button>
                             </div></div>
                         )}
@@ -475,7 +457,7 @@
                         )}
 
                         {showGoalModal && (
-                            <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[100] fade-in"><div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl border-8 border-indigo-50 text-center uppercase tracking-tighter"><h2 className="text-5xl font-black mb-10 text-indigo-600 leading-none italic">Nuevo Sueño</h2><input type="text" value={newGoalName} onChange={e=>setNewGoalName(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none font-black text-3xl text-center mb-4" placeholder="¿Qué sueñas?" /><input type="number" value={newGoalTarget} onChange={e=>setNewGoalTarget(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none text-6xl font-black text-center" placeholder="$ Costo" /><div className="flex gap-4 mt-8"><button onClick={()=>setShowGoalModal(false)} className="flex-1 py-6 font-black text-slate-400 uppercase tracking-widest">Cerrar</button><button onClick={handleSaveGoal} className={`flex-2 py-6 px-10 font-black ${theme.bg} text-white rounded-[2rem] text-2xl btn-3d ${theme.shadow}`}>Guardar</button></div></div></div>
+                            <div className="fixed inset-0 bg-indigo-900/80 backdrop-blur-xl flex items-center justify-center p-4 z-[100] fade-in text-center"><div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl border-8 border-indigo-50 text-center uppercase tracking-tighter"><h2 className="text-5xl font-black mb-10 text-indigo-600 leading-none italic">Nuevo Sueño</h2><input type="text" value={newGoalName} onChange={e=>setNewGoalName(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none font-black text-3xl text-center mb-4" placeholder="¿Qué sueñas?" /><input type="number" value={newGoalTarget} onChange={e=>setNewGoalTarget(e.target.value)} className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2.5rem] outline-none text-6xl font-black text-center" placeholder="$ Costo" /><div className="flex gap-4 mt-8"><button onClick={()=>setShowGoalModal(false)} className="flex-1 py-6 font-black text-slate-400 uppercase tracking-widest">Cerrar</button><button onClick={handleSaveGoal} className={`flex-2 py-6 px-10 font-black ${theme.bg} text-white rounded-[2rem] text-2xl btn-3d ${theme.shadow}`}>Guardar</button></div></div></div>
                         )}
                     </div>
                 );
